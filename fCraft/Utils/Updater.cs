@@ -30,13 +30,13 @@ namespace fCraft {
             get { return "LegendCraft " + CurrentRelease.VersionString; }
         }
 
-        public const string LatestStable = null;
+        public const string LatestStable = "1.700";
 
         public static string UpdateUrl { get; set; }
 
         static Updater() {
             UpdateCheckTimeout = 4000;
-            UpdateUrl = null;
+            UpdateUrl = "http://au70.net/UpdateCheck.php?r={0}";
         }
 
 
