@@ -282,8 +282,6 @@ namespace fCraft.ConfigGUI {
                 cPatrolledRank.SelectedIndex = RankManager.GetIndex( RankManager.PatrolledRank );
             }
 
-            xPaidPlayersOnly.Checked = ConfigKey.PaidPlayersOnly.Enabled();
-
 
             xBlockDBEnabled.Checked = ConfigKey.BlockDBEnabled.Enabled();
             xBlockDBAutoEnable.Checked = ConfigKey.BlockDBAutoEnable.Enabled();
@@ -537,7 +535,6 @@ namespace fCraft.ConfigGUI {
             } else {
                 ConfigKey.PatrolledRank.TrySetValue( RankManager.PatrolledRank.FullName );
             }
-            ConfigKey.PaidPlayersOnly.TrySetValue( xPaidPlayersOnly.Checked );
 
             ConfigKey.BlockDBEnabled.TrySetValue( xBlockDBEnabled.Checked );
             ConfigKey.BlockDBAutoEnable.TrySetValue( xBlockDBAutoEnable.Checked );
