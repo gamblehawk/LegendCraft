@@ -1,4 +1,4 @@
-﻿// Copyright 2009-2012 Matvei Stefarov <me@matvei.org>
+// Copyright 2009-2012 Matvei Stefarov <me@matvei.org>
 
 namespace fCraft.ConfigGUI {
     partial class MainForm {
@@ -692,8 +692,6 @@ Affected commands:
             toolTip.SetToolTip( xAntispamKicks, "Kick players who repeatedly trigger antispam warnings." );
             toolTip.SetToolTip( nAntispamMaxWarnings, ConfigKey.AntispamMaxWarnings.GetDescription() );
             toolTip.SetToolTip( lAntispamMaxWarnings, ConfigKey.AntispamMaxWarnings.GetDescription() );
-
-            toolTip.SetToolTip( xPaidPlayersOnly, ConfigKey.PaidPlayersOnly.GetDescription() );
 
             toolTip.SetToolTip( xBlockDBEnabled, ConfigKey.BlockDBEnabled.GetDescription() );
             toolTip.SetToolTip( xBlockDBAutoEnable, ConfigKey.BlockDBAutoEnable.GetDescription() );
