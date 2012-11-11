@@ -1,4 +1,4 @@
-﻿namespace fCraft.ConfigGUI {
+namespace fCraft.ConfigGUI {
     partial class MainForm {
         /// <summary>
         /// Required designer variable.
@@ -152,7 +152,6 @@
             this.gSecurityMisc = new System.Windows.Forms.GroupBox();
             this.xAnnounceRankChangeReasons = new System.Windows.Forms.CheckBox();
             this.xRequireKickReason = new System.Windows.Forms.CheckBox();
-            this.xPaidPlayersOnly = new System.Windows.Forms.CheckBox();
             this.lPatrolledRankAndBelow = new System.Windows.Forms.Label();
             this.cPatrolledRank = new System.Windows.Forms.ComboBox();
             this.lPatrolledRank = new System.Windows.Forms.Label();
@@ -1817,7 +1816,6 @@
             // 
             this.gSecurityMisc.Controls.Add(this.xAnnounceRankChangeReasons);
             this.gSecurityMisc.Controls.Add(this.xRequireKickReason);
-            this.gSecurityMisc.Controls.Add(this.xPaidPlayersOnly);
             this.gSecurityMisc.Controls.Add(this.lPatrolledRankAndBelow);
             this.gSecurityMisc.Controls.Add(this.cPatrolledRank);
             this.gSecurityMisc.Controls.Add(this.lPatrolledRank);
@@ -1851,17 +1849,6 @@
             this.xRequireKickReason.TabIndex = 1;
             this.xRequireKickReason.Text = "Require kick reason";
             this.xRequireKickReason.UseVisualStyleBackColor = true;
-            // 
-            // xPaidPlayersOnly
-            // 
-            this.xPaidPlayersOnly.AutoSize = true;
-            this.xPaidPlayersOnly.Location = new System.Drawing.Point(42, 20);
-            this.xPaidPlayersOnly.Name = "xPaidPlayersOnly";
-            this.xPaidPlayersOnly.Size = new System.Drawing.Size(489, 19);
-            this.xPaidPlayersOnly.TabIndex = 0;
-            this.xPaidPlayersOnly.Text = "Only allow players with paid Minecraft accounts to join the server (not recommend" +
-                "ed).";
-            this.xPaidPlayersOnly.UseVisualStyleBackColor = true;
             // 
             // lPatrolledRankAndBelow
             // 
@@ -3855,7 +3842,6 @@
         private System.Windows.Forms.Label lLogConsoleOptionsDescription;
         private System.Windows.Forms.CheckBox xIRCBotAnnounceServerEvents;
         private System.Windows.Forms.CheckBox xIRCUseColor;
-        private System.Windows.Forms.CheckBox xPaidPlayersOnly;
         private System.Windows.Forms.Button bMapPath;
         private System.Windows.Forms.CheckBox xMapPath;
         private System.Windows.Forms.TextBox tMapPath;
