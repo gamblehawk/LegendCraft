@@ -12,6 +12,7 @@ Add: /WhoIs, thx jonty
 Change: Various typo fixes
 Remove: /Jelly
 Remove: /Mad
+Remove: haspaid status (thx mojang)
 
 LegendCraft Changelog v1.7.0
 Add: /fortunecookie
