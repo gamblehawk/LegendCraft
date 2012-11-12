@@ -1,4 +1,4 @@
-﻿// Copyright 2009-2012 Matvei Stefarov <me@matvei.org>
+// Copyright 2009-2012 Matvei Stefarov <me@matvei.org>
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -688,12 +688,6 @@ namespace fCraft {
                                                      "Please wait; Checking paid status..." ) );
                 writer.Flush();
 
-                if( !CheckPaidStatus( Name ) ) {
-                    Logger.Log( LogType.SystemActivity,
-                                "Player {0} was kicked because their account is not paid, and PaidPlayersOnly setting is enabled.", Name );
-                    KickNow( "Paid players allowed only.", LeaveReason.LoginFailed );
-                    return false;
-                }
             }
 
 
