@@ -142,7 +142,7 @@ THE SOFTWARE.*/
                     {
                         if (!int.TryParse(amount, out amountnum))
                         {
-                            player.Message("&eThe amount must be a number!");
+                            player.Message("&eThe amount must be a number with no decimals foo'!");
                             return;
                         }                      
                         if (cmd.IsConfirmed)
@@ -225,6 +225,11 @@ THE SOFTWARE.*/
                         player.Message("&ePlease type in a player's name to pay bits towards.");
                         return;
                     }
+                    if (target == player)
+                    {
+                        player.Message("You can't pay yourself >.> Doesn't work like that.");
+                        return;
+                    }
 
                     if (target == null)
                     {
@@ -260,7 +265,7 @@ THE SOFTWARE.*/
                         }
                         else
                         {
-                            player.Confirm(cmd, "&eAre you sure you want to pay {0} &C{1} &ebits? Type /ok to continue.", target.ClassyName, amountnum);
+                            player.Confirm(cmd, "&eAre you sure you want to pay {0}&e {1} &ebits? Type /ok to continue.", target.ClassyName, amountnum);
                             return;
                         }
                         
@@ -1762,7 +1767,7 @@ THE SOFTWARE.*/
             Handler = FreezeHandler
         };
 
-        static void FreezeHandler( Player player, Command cmd ) {
+        public static void FreezeHandler( Player player, Command cmd ) {
             string name = cmd.Next();
             if( name == null ) {
                 CdFreeze.PrintUsage( player );
