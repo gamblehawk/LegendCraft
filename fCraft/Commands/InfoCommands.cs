@@ -1,4 +1,4 @@
-﻿// Copyright 2009-2012 Matvei Stefarov <me@matvei.org>
+// Copyright 2009-2012 Matvei Stefarov <me@matvei.org>
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -60,8 +60,8 @@ namespace fCraft {
 
         //You should have received a copy of the GNU General Public License
         //along with this program.  If not, see <http://www.gnu.org/licenses/>.
-        
-          static readonly CommandDescriptor CdWhoIs = new CommandDescriptor
+
+        static readonly CommandDescriptor CdWhoIs = new CommandDescriptor
         {
             Name = "WhoIs",
             Category = CommandCategory.Info,
@@ -127,7 +127,7 @@ namespace fCraft {
             player.Message("More than one player matched with that DisplayedName: {0}",
                      nameList);
         }
-                     
+        
 
         static readonly CommandDescriptor CdList = new CommandDescriptor
         {
@@ -430,7 +430,7 @@ namespace fCraft {
 
         static readonly CommandDescriptor CdInfo = new CommandDescriptor {
             Name = "Info",
-            Aliases = new[] { "whois", "whowas" },
+            Aliases = new[] { "whowas" },
             Category = CommandCategory.Info,
             IsConsoleSafe = true,
             UsableByFrozenPlayers = true,
