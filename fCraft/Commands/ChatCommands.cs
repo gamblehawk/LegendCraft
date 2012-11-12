@@ -39,9 +39,9 @@ namespace fCraft
             CommandManager.RegisterCommand(CdModerate);
 
             CommandManager.RegisterCommand(CdBroFist);
-            CommandManager.RegisterCommand(CdGive);
+            //CommandManager.RegisterCommand(CdGive);
             //CommandManager.RegisterCommand(CdJelly);
-            //CommandManager.RegisterCommand(CdMad);
+            CommandManager.RegisterCommand(CdMad);
             CommandManager.RegisterCommand(CdBanHammer);
             CommandManager.RegisterCommand(CdCredits);
             CommandManager.RegisterCommand(CdSTFU);
@@ -83,20 +83,45 @@ THE SOFTWARE.*/
             Category = CommandCategory.Chat | CommandCategory.World,
             Permissions = new Permission[] { Permission.ManageWorldChat },
             IsConsoleSafe = false,
-            Usage = "/WorldChat",
+            Usage = "/WorldChat toggle/check",
             Help = "Toggles World Chat.",
             Handler = WorldChat,
         };
 
         static void WorldChat(Player player, Command cmd)
         {
-            if (player.World.WorldOnlyChat == false)
+            string option = cmd.Next();
+            if (option == "toggle")
             {
-                player.World.WorldOnlyChat = true;
+
+                if (player.World.WorldOnlyChat == false)
+                {
+                    Server.Message("{0}&c has activated world chat on {1}", player.ClassyName, player.World);
+                    player.World.WorldOnlyChat = true;
+                }
+                else
+                {
+                    Server.Message("{0}%c has deactivated world chat on {1}", player.ClassyName, player.World);
+                    player.World.WorldOnlyChat = false;
+                }
+            }
+            else if (option == "check")
+            {
+                if (player.World.WorldOnlyChat == true)
+                {
+                    player.Message("World Chat is enabled on {0}", player.World);
+                    return;
+                }
+                else
+                {
+                    player.Message("World Chat is disnabled on {0}", player.World);
+                    return;
+                }
             }
             else
             {
-                player.World.WorldOnlyChat = false;
+                player.Message("Valid options are toggle and check.");
+                return;
             }
             
         }                         
@@ -1833,6 +1858,8 @@ THE SOFTWARE.*/
 
         #endregion
 
+        
     }
 
 }
+                     
