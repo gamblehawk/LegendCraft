@@ -132,56 +132,16 @@ namespace fCraft {
 
         static void NickHandler(Player player, Command cmd)
         {
-            string targetName = cmd.Next();
-            string valName = cmd.NextAll();
+            string target = cmd.Next();
+            string displayedname = cmd.Next();
 
-            if (targetName == null)
+            if (target == null && displayedname == null)
             {
                 CdNick.PrintUsage(player);
-                return;
-            }
-            Player target = Server.FindPlayerOrPrintMatches(player, targetName, false, true);
-            PlayerInfo info = PlayerDB.FindPlayerInfoOrPrintMatches(player, targetName);
-            if (info == null) return;
-            string oldDisplayedName = info.DisplayedName;
-            if (valName.Length == 0) valName = null;
-            if (valName == info.DisplayedName)
-            {
-                if (valName == null)
-                {
-                    player.Message("Nick: DisplayedName for {0} is not set.",
-                                    info.Name);
-                }
-                else
-                {
-                    player.Message("Nick: DisplayedName for {0} is already set to \"{1}&S\"",
-                                    info.Name,
-                                    valName);
-                }
-                return;
-            }
-            info.DisplayedName = valName;
-
-            if (oldDisplayedName == null)
-            {
-                player.Message("Nick: DisplayedName for {0} set to \"{1}&S\"",
-                                info.Name,
-                                valName);
-            }
-            else if (valName == null)
-            {
-                player.Message("Nick: DisplayedName for {0} was reset (was \"{1}&S\")",
-                                info.Name,
-                                oldDisplayedName);
-                target.Info.isMad = false;
-                target.Info.isJelly = false;
             }
             else
             {
-                player.Message("Nick: DisplayedName for {0} changed from \"{1}&S\" to \"{2}&S\"",
-                                info.Name,
-                                oldDisplayedName,
-                                valName);
+                SetInfoHandler(player, new Command("/setinfo " + target + " displayedname " + displayedname));
             }
         }
         #endregion
