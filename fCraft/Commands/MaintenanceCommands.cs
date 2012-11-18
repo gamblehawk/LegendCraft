@@ -133,7 +133,7 @@ namespace fCraft {
         static void NickHandler(Player player, Command cmd)
         {
             string target = cmd.Next();
-            string displayedname = cmd.Next();
+            string displayedname = cmd.NextAll();
 
             if (target == null && displayedname == null)
             {
