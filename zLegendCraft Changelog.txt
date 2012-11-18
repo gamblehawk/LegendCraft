@@ -1,4 +1,6 @@
-LegendCraft Changelog v1.9.0
+LegendCraft Changelog v1.8.1
+Change: fix to /nick
+Remove: /WorldChat (error)
 
 LegendCraft Changelog v1.8.0
 Add: /Economy
