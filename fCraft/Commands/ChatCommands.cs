@@ -50,7 +50,7 @@ namespace fCraft
             CommandManager.RegisterCommand(CdCalculator);
             CommandManager.RegisterCommand(CdGPS);
             CommandManager.RegisterCommand(CdVote); 
-            CommandManager.RegisterCommand(CdWorldChat);                                      
+            //CommandManager.RegisterCommand(CdWorldChat);                                      
 
 
             Player.Moved += new EventHandler<Events.PlayerMovedEventArgs>(Player_IsBack);
