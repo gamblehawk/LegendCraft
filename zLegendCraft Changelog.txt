@@ -1,4 +1,7 @@
-LegendCraft Changelog v1.8.1
+LegendCraft Changelog v1.9.0
+Change: sinfo now displayes software version
+
+LegendCraft Changelog v1.8.1 (emergency update)
 Change: fix to /nick
 Remove: /WorldChat (error)
 
