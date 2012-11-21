@@ -1,1 +1,5 @@
 ToDo:
+-add irc visibility to lebot 
+-remove theme option from serverGUI
+-allow editing of announcements and possibly rules and greeting ig
+-seduce women, obtain currency
