@@ -1105,11 +1105,11 @@ namespace fCraft {
             }
 
             if( MonoCompat.IsMono ) {
-                player.Message( " Running &5Legend&WCraft v1.0.0&S {0}, under Mono {1}",
+                player.Message( " Running &5Legend&WCraft&S v1.8.1 under Mono {1}",
                                 Updater.CurrentRelease.VersionString,
                                 MonoCompat.MonoVersionString );
             } else {
-                player.Message( " Running &5Legend&WCraft under .NET {1}",
+                player.Message( " Running &5Legend&WCraft&S v1.8.1 under .NET {1}",
                                 Updater.CurrentRelease.VersionString,
                                 Environment.Version );
             }
