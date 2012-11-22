@@ -2,4 +2,8 @@ ToDo:
 -add irc visibility to lebot 
 -remove theme option from serverGUI
 -allow editing of announcements and possibly rules and greeting ig
+-make a polar2d build cd
+-$help (possibly /$commands)
+-branch /pay from /econ pay 
+-(possible) /lebot reqs
 -seduce women, obtain currency
