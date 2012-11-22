@@ -1,5 +1,5 @@
 ToDo:
--add irc visibility to lebot 
+-add irc visibility to lebot  (done!)
 -remove theme option from serverGUI
 -allow editing of announcements and possibly rules and greeting ig
 -make a polar2d build cd
