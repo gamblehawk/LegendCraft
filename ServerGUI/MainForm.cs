@@ -1,4 +1,4 @@
-﻿// Copyright 2009-2012 Matvei Stefarov <me@matvei.org>
+// Copyright 2009-2012 Matvei Stefarov <me@matvei.org>
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -212,7 +212,7 @@ namespace fCraft.ServerGUI {
                             logBox.SelectionColor = System.Drawing.Color.Teal;
                             break;
                         case LogType.IRC:
-                            if (ThemeBox.SelectedItem == null)
+                           if (ThemeBox.SelectedItem == null)
                             {
                                 logBox.SelectionColor = System.Drawing.Color.Navy;
                             }
@@ -223,11 +223,11 @@ namespace fCraft.ServerGUI {
                                     default:
                                         logBox.SelectionColor = System.Drawing.Color.LightSkyBlue;
                                         break;
-                                    case "New LegendCraft":
+                                    case "Default LC":
                                         logBox.SelectionColor = System.Drawing.Color.Navy;
                                         break;
                                 }
-                            }
+                            } 
                             break;
                         case LogType.ChangedWorld:
                             logBox.SelectionColor = System.Drawing.Color.Orange;
@@ -244,7 +244,7 @@ namespace fCraft.ServerGUI {
                                     default:
                                         logBox.SelectionColor = System.Drawing.Color.MediumOrchid;
                                         break;
-                                    case "New LegendCraft":
+                                    case "Default LC":
                                         logBox.SelectionColor = System.Drawing.Color.Yellow;
                                         break;
                                 }
@@ -270,7 +270,7 @@ namespace fCraft.ServerGUI {
                                     default:
                                         logBox.SelectionColor = System.Drawing.Color.Black;
                                         break;
-                                    case "New LegendCraft":
+                                    case "Default LC":
                                         logBox.SelectionColor = System.Drawing.Color.White;
                                         break;
                                 }
@@ -288,7 +288,7 @@ namespace fCraft.ServerGUI {
                                     default:
                                         logBox.SelectionColor = System.Drawing.Color.Black;
                                         break;
-                                    case "New LegendCraft":
+                                    case "Default LC":
                                         logBox.SelectionColor = System.Drawing.Color.LightGray;
                                         break;
                                 }
@@ -410,7 +410,7 @@ namespace fCraft.ServerGUI {
                 }
 #endif
             }
-            console.Text = "";
+            console.Text = " ";
         }
 
 
@@ -471,11 +471,18 @@ namespace fCraft.ServerGUI {
             }
         }
 
-        private bool _isBlackText = false;
+        private bool isDef = true;
+        private bool isAlt = false;
+        private bool isPink = false;
+        private bool isYellow = false;
+        private bool isGreen = false;
+        private bool isPurple = false;
+        private bool isGrey = false;
+
         private void ThemeBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ThemeBox.SelectedItem.ToString().Equals("New LegendCraft")) { SetNewTheme(); }
-            if (ThemeBox.SelectedItem.ToString().Equals("Old LegendCraft")) { SetOldTheme(); }
+            if (ThemeBox.SelectedItem.ToString().Equals("Default LC")) { SetDefTheme(); }
+            if (ThemeBox.SelectedItem.ToString().Equals("Alternate LC")) { SetAltTheme(); }
             if (ThemeBox.SelectedItem.ToString().Equals("Pink")) { SetPinkTheme(); }
             if (ThemeBox.SelectedItem.ToString().Equals("Yellow")) { SetYellowTheme(); }
             if (ThemeBox.SelectedItem.ToString().Equals("Green")) { SetGreenTheme(); }
@@ -484,32 +491,45 @@ namespace fCraft.ServerGUI {
         }
 
 
-        public void SetNewTheme()
+        public void SetDefTheme()
         {
-            BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            playerList.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
-            if (logBox.BackColor != System.Drawing.Color.Black)
+            BackColor = System.Drawing.Color.Firebrick;
+            playerList.BackColor = System.Drawing.Color.White;
+            logBox.BackColor = System.Drawing.Color.Black;
+            if (!isDef)
             {
-                logBox.BackColor = System.Drawing.Color.Black;
                 logBox.SelectAll();
                 logBox.SelectionColor = System.Drawing.Color.LightGray;
                 logBox.SelectionStart = logBox.Text.Length;
                 logBox.ScrollToCaret();
-                _isBlackText = false;
+                isDef = true;
+                isAlt = false;
+                isPink = false;
+                isYellow = false;
+                isGreen = false;
+                isPurple = false;
+                isGrey = false;
+
             }
         }
-        public void SetOldTheme()
+        public void SetAltTheme()
         {
-            BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            playerList.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
-            logBox.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
-            if (!_isBlackText)
+            BackColor = System.Drawing.Color.Black;
+            playerList.BackColor = System.Drawing.Color.White;
+            logBox.BackColor = System.Drawing.Color.Firebrick;
+            if (!isAlt)
             {
                 logBox.SelectAll();
                 logBox.SelectionColor = System.Drawing.Color.Black;
                 logBox.SelectionStart = logBox.Text.Length;
                 logBox.ScrollToCaret();
-                _isBlackText = true;
+                isDef = false;
+                isAlt = true;
+                isPink = false;
+                isYellow = false;
+                isGreen = false;
+                isPurple = false;
+                isGrey = false;
             }
         }
         public void SetPinkTheme()
@@ -517,13 +537,19 @@ namespace fCraft.ServerGUI {
             BackColor = System.Drawing.Color.Pink;
             playerList.BackColor = System.Drawing.Color.LightPink;
             logBox.BackColor = System.Drawing.Color.LightPink;
-            if (!_isBlackText)
+            if (!isPink)
             {
                 logBox.SelectAll();
                 logBox.SelectionColor = System.Drawing.Color.Black;
                 logBox.SelectionStart = logBox.Text.Length;
                 logBox.ScrollToCaret();
-                _isBlackText = true;
+                isDef = false;
+                isAlt = false;
+                isPink = true;
+                isYellow = false;
+                isGreen = false;
+                isPurple = false;
+                isGrey = false;
             }
         }
 
@@ -532,13 +558,19 @@ namespace fCraft.ServerGUI {
             BackColor = System.Drawing.Color.LightGoldenrodYellow;
             playerList.BackColor = System.Drawing.Color.LightYellow;
             logBox.BackColor = System.Drawing.Color.LightYellow;
-            if (!_isBlackText)
+            if (!isYellow)
             {
                 logBox.SelectAll();
                 logBox.SelectionColor = System.Drawing.Color.Black;
                 logBox.SelectionStart = logBox.Text.Length;
                 logBox.ScrollToCaret();
-                _isBlackText = true;
+                isDef = false;
+                isAlt = false;
+                isPink = false;
+                isYellow = true;
+                isGreen = false;
+                isPurple = false;
+                isGrey = false;
             }
         }
 
@@ -547,13 +579,19 @@ namespace fCraft.ServerGUI {
             BackColor = System.Drawing.Color.SpringGreen;
             playerList.BackColor = System.Drawing.Color.LightGreen;
             logBox.BackColor = System.Drawing.Color.LightGreen;
-            if (!_isBlackText)
+            if (!isGreen)
             {
                 logBox.SelectAll();
                 logBox.SelectionColor = System.Drawing.Color.Black;
                 logBox.SelectionStart = logBox.Text.Length;
                 logBox.ScrollToCaret();
-                _isBlackText = true;
+                isDef = false;
+                isAlt = false;
+                isPink = false;
+                isYellow = false;
+                isGreen = true;
+                isPurple = false;
+                isGrey = false;
             }
         }
 
@@ -562,13 +600,19 @@ namespace fCraft.ServerGUI {
             BackColor = System.Drawing.Color.MediumPurple;
             playerList.BackColor = System.Drawing.Color.Plum;
             logBox.BackColor = System.Drawing.Color.Plum;
-            if (!_isBlackText)
+            if (!isPurple)
             {
                 logBox.SelectAll();
                 logBox.SelectionColor = System.Drawing.Color.Black;
                 logBox.SelectionStart = logBox.Text.Length;
                 logBox.ScrollToCaret();
-                _isBlackText = true;
+                isDef = false;
+                isAlt = false;
+                isPink = false;
+                isYellow = false;
+                isGreen = false;
+                isPurple = true;
+                isGrey = false;
             }
         }
 
@@ -577,13 +621,19 @@ namespace fCraft.ServerGUI {
             BackColor = System.Drawing.SystemColors.Control;
             playerList.BackColor = System.Drawing.SystemColors.ControlLight;
             logBox.BackColor = System.Drawing.SystemColors.ControlLight;
-            if (!_isBlackText)
+            if (!isGrey)
             {
                 logBox.SelectAll();
                 logBox.SelectionColor = System.Drawing.Color.Black;
                 logBox.SelectionStart = logBox.Text.Length;
                 logBox.ScrollToCaret();
-                _isBlackText = true;
+                isDef = false;
+                isAlt = false;
+                isPink = false;
+                isYellow = false;
+                isGreen = false;
+                isPurple = false;
+                isGrey = true;
             }
         }
     }
