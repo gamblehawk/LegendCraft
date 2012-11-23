@@ -4,6 +4,6 @@ ToDo:
 -allow editing of announcements and possibly rules and greeting ig
 -make a polar2d build cd
 -$help (possibly /$commands)
--branch /pay from /econ pay 
+-branch /pay from /econ pay  (done!)
 -(possible) /lebot reqs
--seduce women, obtain currency
+-seduce women, obtain currency 
