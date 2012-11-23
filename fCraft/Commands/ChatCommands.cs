@@ -2,62 +2,82 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using fCraft.Events;
+using JetBrains.Annotations;
 
-namespace fCraft
-{
-    static class ChatCommands
-    {
-        const int PlayersPerPage = 20;
+namespace fCraft {
+    /// <summary>
+    /// Most commands for server moderation - kick, ban, rank change, etc - are here.
+    /// </summary>
+    static class ModerationCommands {
+        const string BanCommonHelp = "Ban information can be viewed with &H/BanInfo";
 
-        public static void Init()
-        {
-            CommandManager.RegisterCommand(CdSay);
-            CommandManager.RegisterCommand(CdStaff);
+        internal static void Init() {
+            CdBan.Help += BanCommonHelp;
+            CdBanIP.Help += BanCommonHelp;
+            CdBanAll.Help += BanCommonHelp;
+            CdUnban.Help += BanCommonHelp;
+            CdUnbanIP.Help += BanCommonHelp;
+            CdUnbanAll.Help += BanCommonHelp;
 
-            CommandManager.RegisterCommand(CdIgnore);
-            CommandManager.RegisterCommand(CdUnignore);
+            CommandManager.RegisterCommand( CdBan );
+            CommandManager.RegisterCommand( CdBanIP );
+            CommandManager.RegisterCommand( CdUnban );
+            CommandManager.RegisterCommand( CdUnbanIP );
+            CommandManager.RegisterCommand( CdUnbanAll );
 
-            CommandManager.RegisterCommand(CdMe);
+            CommandManager.RegisterCommand( CdBanEx );
 
-            CommandManager.RegisterCommand(CdRoll);
+            CommandManager.RegisterCommand( CdKick );
 
-            CommandManager.RegisterCommand(CdDeafen);
+            CommandManager.RegisterCommand( CdRank );
 
-            CommandManager.RegisterCommand(CdClear);
+            CommandManager.RegisterCommand( CdHide );
+            CommandManager.RegisterCommand( CdUnhide );
 
-            CommandManager.RegisterCommand(CdTimer);
+            CommandManager.RegisterCommand( CdSetSpawn );
 
-            CommandManager.RegisterCommand(cdReview);
-            CommandManager.RegisterCommand(CdAdminChat);
-            CommandManager.RegisterCommand(CdCustomChat);
-            CommandManager.RegisterCommand(cdAway);
-            CommandManager.RegisterCommand(CdHigh5);
-            CommandManager.RegisterCommand(CdPoke);
-            CommandManager.RegisterCommand(CdBroMode);
-            CommandManager.RegisterCommand(CdRageQuit);
-            CommandManager.RegisterCommand(CdQuit);
-            CommandManager.RegisterCommand(CdModerate);
+            CommandManager.RegisterCommand( CdFreeze );
+            CommandManager.RegisterCommand( CdUnfreeze );
 
-            CommandManager.RegisterCommand(CdBroFist);
-            //CommandManager.RegisterCommand(CdGive);
-            //CommandManager.RegisterCommand(CdJelly);
-            CommandManager.RegisterCommand(CdMad);
-            CommandManager.RegisterCommand(CdBanHammer);
-            CommandManager.RegisterCommand(CdCredits);
-            CommandManager.RegisterCommand(CdSTFU);
-            CommandManager.RegisterCommand(CdFortuneCookie);
-            CommandManager.RegisterCommand(CdLeBot);
-            CommandManager.RegisterCommand(CdCalculator);
-            CommandManager.RegisterCommand(CdGPS);
-            CommandManager.RegisterCommand(CdVote); 
-            //CommandManager.RegisterCommand(CdWorldChat);                                      
+            CommandManager.RegisterCommand( CdTP );
+            CommandManager.RegisterCommand( CdBring );
+            CommandManager.RegisterCommand( CdWorldBring );
+            CommandManager.RegisterCommand( CdBringAll );
 
+            CommandManager.RegisterCommand( CdPatrol );
+            CommandManager.RegisterCommand( CdSpecPatrol );
 
-            Player.Moved += new EventHandler<Events.PlayerMovedEventArgs>(Player_IsBack);
+            CommandManager.RegisterCommand( CdMute );
+            CommandManager.RegisterCommand( CdUnmute );
+
+            CommandManager.RegisterCommand( CdSpectate );
+            CommandManager.RegisterCommand( CdUnspectate );
+
+            CommandManager.RegisterCommand( CdSlap );
+            CommandManager.RegisterCommand( CdTPZone );
+            CommandManager.RegisterCommand( CdBasscannon );
+            CommandManager.RegisterCommand( CdKill );            
+            CommandManager.RegisterCommand( CdTempBan );
+            CommandManager.RegisterCommand( CdWarn );
+            CommandManager.RegisterCommand( CdUnWarn );
+            CommandManager.RegisterCommand( CdDisconnect );            
+            CommandManager.RegisterCommand( CdImpersonate );
+            CommandManager.RegisterCommand( CdImmortal );
+            CommandManager.RegisterCommand( CdTitle );
+           
+            CommandManager.RegisterCommand( CdMuteAll );
+            CommandManager.RegisterCommand( CdAssassinate );
+            CommandManager.RegisterCommand( CdPunch );
+            CommandManager.RegisterCommand( CdBanAll );
+            CommandManager.RegisterCommand( CdEconomy );
+            CommandManager.RegisterCommand(CdPay);
+
         }
         #region LegendCraft
-        /* Copyright (c) <2012> <LeChosenOne, DingusBingus>
-Permission is hereby granted, free of charge, to any person obtaining a copy
+        /* Copyright (c) <2012> <LeChosenOne, DingusBungus>
+   Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
@@ -75,910 +95,512 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.*/
 
+        #region Economy
 
-        
-        static readonly CommandDescriptor CdWorldChat = new CommandDescriptor
+         static readonly CommandDescriptor CdPay = new CommandDescriptor
         {
-            Name = "WorldChat",
-            Category = CommandCategory.Chat | CommandCategory.World,
-            Permissions = new Permission[] { Permission.ManageWorldChat },
+            Name = "Pay",
+            Aliases = new[] { "Purchase" },
+            Category = CommandCategory.Moderation,
             IsConsoleSafe = false,
-            Usage = "/WorldChat toggle/check",
-            Help = "Toggles World Chat.",
-            Handler = WorldChat,
+            Permissions = new[] { Permission.Economy },
+            Usage = "/pay player amount",
+            Help = "&SUsed to pay a certain player an amount of bits.",
+            Handler = PayHandler
         };
 
-        static void WorldChat(Player player, Command cmd)
-        {
-            string option = cmd.Next();
-            if (option == "toggle")
-            {
+         static void PayHandler(Player player, Command cmd)
+         {
+             string targetName = cmd.Next();
+             string amount = cmd.Next();
+             int amountnum;
+                 Player target = Server.FindPlayerOrPrintMatches(player, targetName, false, true);
+                 if (targetName == null)
+                 {
+                     player.Message("&ePlease type in a player's name to pay bits towards.");
+                     return;
+                 }
+                 if (target == player)
+                 {
+                     player.Message("You can't pay yourself >.> Doesn't work like that.");
+                     return;
+                 }
 
-                if (player.World.WorldOnlyChat == false)
-                {
-                    Server.Message("{0}&c has activated world chat on {1}", player.ClassyName, player.World);
-                    player.World.WorldOnlyChat = true;
-                }
-                else
-                {
-                    Server.Message("{0}&c has deactivated world chat on {1}", player.ClassyName, player.World);
-                    player.World.WorldOnlyChat = false;
-                }
-            }
-            else if (option == "check")
-            {
-                if (player.World.WorldOnlyChat == true)
-                {
-                    player.Message("World Chat is enabled on {0}", player.World);
-                    return;
-                }
-                else
-                {
-                    player.Message("World Chat is disabled on {0}", player.World);
-                    return;
-                }
-            }
-            else
-            {
-                player.Message("Valid options are toggle and check.");
-                return;
-            }
-            
-        }                         
+                 if (target == null)
+                 {
+                     return;
+                 }
+                 else
+                 {
+                     if (!int.TryParse(amount, out amountnum))
+                     {
+                         player.Message("&eThe amount must be a number!");
+                         return;
+                     }
 
-         static readonly CommandDescriptor CdVote = new CommandDescriptor
+                     if (cmd.IsConfirmed)
+                     {
+                         if (amountnum > player.Info.Money)
+                         {
+                             player.Message("You don't have that many bits!");
+                             return;
+                         }
+                         else
+                         {
+                             //show him da monai
+                             int pNewMoney = player.Info.Money - amountnum;
+                             int tNewMoney = target.Info.Money + amountnum;
+                             player.Message("&eYou have paid &C{1}&e to {0}.", target.ClassyName, amountnum);
+                             target.Message("&e{0} &ehas paid you {1} &ebit(s).", player.ClassyName, amountnum);
+                             Server.Players.Except(target).Except(player).Message("&e{0} &ewas paid {1} &ebit(s) from {2}&e.", target.ClassyName, amountnum, player.ClassyName);
+                             player.Info.Money = pNewMoney;
+                             target.Info.Money = tNewMoney;
+                             return;
+                         }
+                     }
+                     else
+                     {
+                         player.Confirm(cmd, "&eAre you sure you want to pay {0}&e {1} &ebits? Type /ok to continue.", target.ClassyName, amountnum);
+                         return;
+                     }
+
+
+
+                 }
+         }
+
+        static readonly CommandDescriptor CdEconomy = new CommandDescriptor
         {
-            Name = "Vote",
-            Category = CommandCategory.Chat,
-            Permissions = new Permission[] { Permission.Chat },
+            Name = "Economy",
+            Aliases = new[] { "Money", "Econ" },
+            Category = CommandCategory.Moderation,
             IsConsoleSafe = false,
-            Usage = "/Vote Yes/No/Ask/Abort",
-            Help = "Allows you to vote.",
-            Handler = VoteHandler,
+            Permissions = new[] { Permission.Economy },
+            Usage = "/Economy [give/take/show] [playername] [give/take: amount]",
+            Help = "&SEconomy commands for LegendCraft. Show will show you the amount of money a player has" +
+            "and give/take will give or take bits from or to a player. WARNING, give and take will change your server's inflation.",
+            Handler = EconomyHandler
         };
 
-        static void VoteHandler(Player player, Command cmd)
+        static void EconomyHandler(Player player, Command cmd)
         {
-            fCraft.VoteHandler.VoteParams(player, cmd);
-        }                                                                
-
-        static readonly CommandDescriptor CdGPS = new CommandDescriptor
-        {
-            Name = "GPS",
-            Category = CommandCategory.Chat,
-            Permissions = new Permission[] { Permission.Chat },
-            IsConsoleSafe = false,
-            Usage = "/GPS",
-            Help = "Displays your coordinates.",
-            NotRepeatable = true,
-            Handler = GPSHandler,
-        };
-
-        static void GPSHandler(Player player, Command cmd)
-        {
-            LegendCraft.coords(player);
-        }
-
-        #region Calculator
-        static readonly CommandDescriptor CdCalculator = new CommandDescriptor
-        {
-            Name = "Calculator",
-            Aliases = new[] { "Calc" },
-            Category = CommandCategory.Chat | CommandCategory.Math,
-            Permissions = new Permission[] { Permission.Chat },
-            IsConsoleSafe = true,
-            Usage = "/Calculator [number] [+ or -] [number]",
-            Help = "Lets you use a simple calculator in minecraft. Valid options are [ + , - , * , and / ].",
-            NotRepeatable = false,
-            Handler = CalcHandler,
-        };
-
-        static void CalcHandler(Player player, Command cmd)
-        {
-            String numberone = cmd.Next();
-            String op = cmd.Next();
-            String numbertwo = cmd.Next();
-            int no1, no2;
-
-            if (numberone == null || numbertwo == null || op == null)
+            try
             {
-                CdCalculator.PrintUsage(player);
-                return;
-            }
-
-            if (!int.TryParse(numberone, out no1))
-            {
-                player.Message("Please choose from a whole number.");
-                return;
-            }
-
-            if (!int.TryParse(numbertwo, out no2))
-            {
-                player.Message("Please choose from a whole number.");
-                return;
-            }
-
-
-            if (player.Can(Permission.Chat))
-            {
-
-                if (numberone != null | op != null | numbertwo != null)
+                string option = cmd.Next();
+                string targetName = cmd.Next();
+                string amount = cmd.Next();
+                int amountnum;
+                if (option == null)
                 {
-
-
-                    if (op == "+" | op == "-" | op == "*" | op == "/")
+                    CdEconomy.PrintUsage(player);
+                }
+                if (option == "give")
+                {
+                    if (!player.Can(Permission.ManageEconomy))
                     {
-
-                        if (op == "+")
-                        {
-                            long add = no1 + no2;
-                            if (add < 0 | no1 < 0 | no2 < 0)
-                            {
-                                player.Message("Negative Number Detected, please choose from a whole number.");
-                                return;
-                            }
-                            else
-                            {
-                                if (add % 2 == 0 | no1 % 2 == 0 | no2 % 2 == 0)
-                                {
-                                    player.Message("&0Calculator&f: {0}+{1}={2}", no1, no2, add);
-                                }
-                                else
-                                {
-                                    player.Message("Answer is not a whole number. Please make sure both integers being added are whole numbers.");
-                                    return;
-                                }
-                            }
-                        }
-                        if (op == "-")
-                        {
-                            long subtr = no1 - no2;
-                            if (subtr < 0 | no1 < 0 | no2 < 0)
-                            {
-                                player.Message("Negative Number Detected, please choose from a whole number.");
-                                return;
-                            }
-                            else
-                            {
-                                if (subtr % 2 == 0 | no1 % 2 == 0 | no2 % 2 == 0)
-                                {
-                                    player.Message("&0Calculator&f: {0}-{1}={2}", no1, no2, subtr);
-                                }
-                                else
-                                {
-                                    player.Message("Answer is not a whole number. Please make sure both integers being subtracted are whole numbers.");
-                                    return;
-                                }
-                            }
-                        }
-                        if (op == "*")
-                        {
-
-                            long mult = no1 * no2;
-                            if (mult < 0 | no1 < 0 | no2 < 0)
-                            {
-                                player.Message("Negative Number Detected, please choose from a whole number.");
-                                return;
-                            }
-                            else
-                            {
-                                if (mult % 2 == 0 | no1 % 2 == 0 | no2 % 2 == 0)
-                                {
-                                    player.Message("&0Calculator&f: {0}*{1}={2}", no1, no2, mult);
-                                }
-                                else
-                                {
-                                    player.Message("Answer is not a whole number. Please make sure both integers being multiplied are whole numbers.");
-                                    return;
-                                }
-                            }
-                        }
-                        if (op == "/")
-                        {
-
-
-                            long div = no1 / no2;
-                            if (div < 0 | no1 < 0 | no2 < 0)
-                            {
-                                player.Message("Negative Number Detected, please choose froma whole number.");
-                                return;
-                            }
-                            else
-                            {
-                                if (no1 % 2 == 0 | no2 % 2 == 0)
-                                {
-                                    if (no1 % no2 == 0)
-                                    {
-                                        player.Message("&0Calculator&f: {0}/{1}={2}", no1, no2, div);
-                                    }
-                                    else
-                                    {
-                                        player.Message("&0Calculator&f: {0}/{1}={2}, rounded", no1, no2, div);
-                                    }
-                                }
-                                else
-                                {
-                                    player.Message("Answer is not a whole number. Please make sure both integers being divided are whole numbers.");
-                                    return;
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        player.Message("&cInvalid Operator. Please choose from '+' , '-' , '*' , or '/'");
+                        player.Message("You do not have the required permisions to use that command!");
                         return;
                     }
-                }
-                else
-                {
-                    CdCalculator.PrintUsage(player);
-                }
-            }
-
-        }
-
-
-
-        #endregion
-
-        #region LeBot
-        static readonly CommandDescriptor CdLeBot = new CommandDescriptor
-        {
-            Name = "LeBot",
-            Aliases = new[] { "lb" },
-            Category = CommandCategory.Chat | CommandCategory.Fun,
-            Permissions = new Permission[] { Permission.LeBot },
-            IsConsoleSafe = false,
-            Usage = "/LeBot Option",
-            Help = "LegendCraft Bot. Options are [help], [spleef], [go], [server], [joke], [time], [promos], [bans], [kicks], [players], [blocks], and [funfact].",
-            NotRepeatable = true,
-            Handler = LeBotHandler,
-        };
-
-        static void LeBotHandler(Player player, Command cmd)
-        {
-            String option = cmd.Next();
-            double LeTime = (DateTime.Now - player.Info.LastUsedLeBot).TotalSeconds;
-            if (LeTime < 5)
-            {
-                double LeftOverTime = Math.Round(5 - LeTime);
-                if (LeftOverTime == 1)
-                {
-                    player.Message("&WYou can use /LeBot again in 1 second.");
-                    return;
-                }
-                else
-                {
-                    player.Message("&WYou can use /LeBot again in " + LeftOverTime + " seconds");
-                    return;
-                }
-            }
-            if (option == null)
-            {
-                player.Message("LegendCraft Bot. Options are [help], [spleef], [go], [server], [joke], [time], [promos], [bans], [kicks], [players], [blocks], and [funfact].");
-                return;
-            }
-            else if (option == "help")
-            {
-                player.Message("Spleef: Sets a 3 second timer for 'spleef.'\n" +
-                    "Go: Sets a 5 second timer for 'go.'\n" +
-                    "Server: Displays the server name.\n" +
-                    "Joke: Displays a joke.\n" +
-                    "Time: Displays the users total time on the server.\n" +
-                    "Promos: Displays the amount of players the user has promote.d\n" +
-                    "Bans: Displays the amount of players the user has banned.\n" +
-                    "Kicks: Displays the amount of players the user has kicked.\n" +
-                    "Players: Displays the current players online.\n" +
-                    "Blocks: Displays the amount of blocks the user has modified.\n" +
-                    "Funfact: Displays a funfact.\n");
-            }
-
-            else if (option == "go")
-            {
-                Server.Message("{0}&f: LeBot, Go", player.ClassyName);
-                Scheduler.NewTask(t => Server.Message("&0LeBot&f: 5")).RunOnce(TimeSpan.FromSeconds(0));
-                Scheduler.NewTask(t => Server.Message("&0LeBot&f: 4")).RunOnce(TimeSpan.FromSeconds(1));
-                Scheduler.NewTask(t => Server.Message("&0LeBot&f: 3")).RunOnce(TimeSpan.FromSeconds(2));
-                Scheduler.NewTask(t => Server.Message("&0LeBot&f: 2")).RunOnce(TimeSpan.FromSeconds(3));
-                Scheduler.NewTask(t => Server.Message("&0LeBot&f: 1")).RunOnce(TimeSpan.FromSeconds(4));
-                Scheduler.NewTask(t => Server.Message("&0LeBot&f: Go!")).RunOnce(TimeSpan.FromSeconds(5));
-                IRC.SendChannelMessage(player.ClassyName + "&0: LeBot, Go");
-                Scheduler.NewTask(t => IRC.SendChannelMessage("&0LeBot&0: 5")).RunOnce(TimeSpan.FromSeconds(0));
-                Scheduler.NewTask(t => IRC.SendChannelMessage("&0LeBot&0: 4")).RunOnce(TimeSpan.FromSeconds(1));
-                Scheduler.NewTask(t => IRC.SendChannelMessage("&0LeBot&0: 3")).RunOnce(TimeSpan.FromSeconds(2));
-                Scheduler.NewTask(t => IRC.SendChannelMessage("&0LeBot&0: 2")).RunOnce(TimeSpan.FromSeconds(3));
-                Scheduler.NewTask(t => IRC.SendChannelMessage("&0LeBot&0: 1")).RunOnce(TimeSpan.FromSeconds(4));
-                Scheduler.NewTask(t => IRC.SendChannelMessage("&0LeBot&0: Go!")).RunOnce(TimeSpan.FromSeconds(5));
-                player.Info.LastUsedLeBot = DateTime.Now;
-            }
-            else if (option == "spleef")
-            {
-                Server.Message("{0}&f: LeBot, Spleef", player.ClassyName);
-                Scheduler.NewTask(t => Server.Message("&0LeBot&f: 3")).RunOnce(TimeSpan.FromSeconds(0));
-                Scheduler.NewTask(t => Server.Message("&0LeBot&f: 2")).RunOnce(TimeSpan.FromSeconds(1));
-                Scheduler.NewTask(t => Server.Message("&0LeBot&f: 1")).RunOnce(TimeSpan.FromSeconds(2));
-                Scheduler.NewTask(t => Server.Message("&0LeBot&f: Spleef!")).RunOnce(TimeSpan.FromSeconds(3));
-                IRC.SendChannelMessage(player.ClassyName + "&0: LeBot, Spleef");
-                Scheduler.NewTask(t => IRC.SendChannelMessage("&0LeBot&0: 3")).RunOnce(TimeSpan.FromSeconds(0));
-                Scheduler.NewTask(t => IRC.SendChannelMessage("&0LeBot&0: 2")).RunOnce(TimeSpan.FromSeconds(1));
-                Scheduler.NewTask(t => IRC.SendChannelMessage("&0LeBot&0: 1")).RunOnce(TimeSpan.FromSeconds(2));
-                Scheduler.NewTask(t => IRC.SendChannelMessage("&0LeBot&0: Spleef!")).RunOnce(TimeSpan.FromSeconds(3));
-                player.Info.LastUsedLeBot = DateTime.Now;
-            }
-
-            else if (option == "server")
-            {
-                IRC.SendChannelMessage(player.ClassyName + "&0: LeBot, Server");
-                IRC.SendChannelMessage("&0LeBot&0: The name of this server is " + ConfigKey.ServerName.GetString() + ".");
-                Server.Message("{0}&f: LeBot, Server", player.ClassyName);
-                Server.Message("&0LeBot&f: The name of this server is " + ConfigKey.ServerName.GetString() + ".");
-                player.Info.LastUsedLeBot = DateTime.Now;
-            }
-            else if (option == "joke")
-            {
-                string[] jokeStrings = { "&fEnergizer Bunny was arrested, charged with battery.",
-                                      "&fI usually take steps to avoid elevators.",
-                                      "&fSchrodinger's Cat: Wanted dead and alive.",
-                                      "&fIf at first you don't succeed; call it version 1.0",
-                                      "&fCONGRESS.SYS Corrupted: Re-boot Washington D.C (Y/n)?",
-                                      "&fWe live in a society where pizza gets to your house before the police.",
-                                      "&fLight travels faster than sound. This is why some people appear bright until you hear them speak.",
-                                      "&fEvening news is where they begin with 'Good evening', and then proceed to tell you why it isn't.",
-                                      "&fYou do not need a parachute to skydive. You only need a parachute to skydive twice.",
-                                      "&fWhen in doubt, mumble.",
-                                      "&fWar does not determine who is right – only who is left...",
-                                      "&fI wondered why the frisbee was getting bigger - then it hit me.",
-                                      "&fNever argue with a fool, they will lower you to their level, and then beat you with experience.",
-                                      "&fThere are 3 kinds of people in the world: Those who can count and those who can't.",
-                                      "&fNever hit a man with glasses. Hit him with a baseball bat instead.",
-                                      "&fNostalgia isn't what it used to be."};
-                Random RandjokeString = new Random();
-                Server.Message("{0}&f: LeBot, Joke", player.ClassyName);
-                Server.Message("&0LeBot&f: " + jokeStrings[RandjokeString.Next(0, jokeStrings.Length)]);
-                IRC.SendChannelMessage(player.ClassyName + "&0: LeBot, Joke");
-                IRC.SendChannelMessage("&0LeBot&0: " + jokeStrings[RandjokeString.Next(0, jokeStrings.Length)]);
-                player.Info.LastUsedLeBot = DateTime.Now;
-            }
-            else if (option == "time")
-            {
-                TimeSpan time = TimeSpan.FromHours(player.Info.TotalTime.TotalHours);
-                IRC.SendChannelMessage(player.ClassyName + "&0: LeBot, Time");
-                IRC.SendChannelMessage("&0LeBot&0: " + player.ClassyName + "&0 has spent a total of " + time.ToMiniString() + " &0on " + ConfigKey.ServerName.GetString() + "&0.");
-                Server.Message("{0}&f: LeBot, Time", player.ClassyName);
-                Server.Message("&0LeBot&f: {0}&f has spent a total of " + time.ToMiniString() + " &fon {1}&f.", player.ClassyName, ConfigKey.ServerName.GetString());
-
-                player.Info.LastUsedLeBot = DateTime.Now;
-            }
-            else if (option == "promos")
-            {
-                IRC.SendChannelMessage(player.ClassyName + "&0: LeBot, Promos");
-                IRC.SendChannelMessage("&0LeBot&0: " + player.ClassyName + " &0has promoted " + player.Info.PromoCount.ToString() + " &0players.");               
-                Server.Message("{0}&f: LeBot, Promos", player.ClassyName);
-                Server.Message("&0LeBot&f: {0} &fhas promoted " + player.Info.PromoCount.ToString() + " &fplayers.", player.ClassyName);
-
-                player.Info.LastUsedLeBot = DateTime.Now;
-            }
-            else if (option == "bans")
-            {
-                IRC.SendChannelMessage(player.ClassyName + "&0: LeBot, Bans");
-                IRC.SendChannelMessage("&0LeBot&0: " + player.ClassyName + " &0has banned " + player.Info.TimesBannedOthers.ToString() + " &0players."); 
-                Server.Message("{0}&f: LeBot, Bans", player.ClassyName);
-                Server.Message("&0LeBot&f: {0}&f has banned " + player.Info.TimesBannedOthers.ToString() + " players.", player.ClassyName);
-
-
-                player.Info.LastUsedLeBot = DateTime.Now;
-            }
-            else if (option == "kicks")
-            {
-                IRC.SendChannelMessage(player.ClassyName + "&0: LeBot, Kicks");
-                IRC.SendChannelMessage("&0LeBot&0: " + player.ClassyName + " &0has kicked " + player.Info.TimesKickedOthers.ToString() + " &0players."); 
-                Server.Message("{0}&f: LeBot, Kicks", player.ClassyName);
-                Server.Message("&0LeBot&f: {0}&f has kicked " + player.Info.TimesKickedOthers.ToString() +  "&fplayers.", player.ClassyName);
-
-                player.Info.LastUsedLeBot = DateTime.Now;
-            }
-            else if (option == "blocks")
-            {
-                long Mods = player.Info.BlocksDrawn + player.Info.BlocksBuilt + player.Info.BlocksDeleted;
-                IRC.SendChannelMessage(player.ClassyName + "&0: LeBot, Blocks");
-                IRC.SendChannelMessage("&0LeBot&0: " + player.ClassyName + " &0has modified " + Mods + " &0blocks."); 
-                Server.Message("{0}&f: LeBot, Blocks", player.ClassyName);
-                Server.Message("&0LeBot&f: {0} &fhas modified " + Mods + " &fblocks.", player.ClassyName);
-                player.Info.LastUsedLeBot = DateTime.Now;
-            }
-            else if (option == "funfact")
-            {                
-                string[] factStrings = { "&fMaine is the only state in the USA that is one syllable.",
-                                      "&fThe adult human brain weighs about 3 pounds (1,300-1,400 g).",
-                                      "&fPirates of old spoke just like everyone else. The 'pirate accent' was invented for the 1950 Disney movie, Treasure Island.",
-                                      "&fAlmonds are a member of the peach family.",
-                                      "&fParaguay's flag is the only national flag where the front and the back are different.",
-                                      "&fAn ostrich's eye is bigger than it's brain.",
-                                      "&fIn 1999, Furbies were banned by the Pentagon, based on the fear that the dolls would mimic top-secret discussions.",
-                                      "&fA dime has 118 ridges around the edge.",
-                                      "&fPeanuts are one of the ingredients of dynamite.",
-                                      "&fTwo thirds of the world's eggplant is grown in New Jersey.",
-                                      "&fNo piece of paper can be folded in half more than 7 times.",
-                                      "&fVenus is the only planet that rotates clockwise.",
-                                      "&fAmerican Airlines saved $40,000 in 1987 by eliminating 1 olive from each salad served in first-class.",
-                                      "&fA duck's quack doesn't echo and no one knows why..",
-                                      "&fWomen blink nearly twice as much as men.",
-                                      "&fIn 1998, more fast-food employees were murdered on the job than police officers.",
-                                      "&fFortune cookies were actually invented in America, in 1918, by Charles Jung.",
-                                      "&fTYPEWRITER is the longest word that can be made using the letters only on one row of the keyboard."};
-                Random RandfactString = new Random();
-                Server.Message("{0}&f: LeBot, FunFact", player.ClassyName);
-                Server.Message("&0LeBot&f: " + factStrings[RandfactString.Next(0, factStrings.Length)]);
-                IRC.SendChannelMessage(player.ClassyName + "&0: LeBot, FunFact");
-                IRC.SendChannelMessage("&0LeBot&0: " + factStrings[RandfactString.Next(0, factStrings.Length)]);
-                player.Info.LastUsedLeBot = DateTime.Now;
-            }
-            
-            else if (option == "players")
-            {
-                string param = cmd.Next();
-                Player[] players;
-                string qualifier;
-                int offset = 0;
-                players = Server.Players;
-                qualifier = "online";
-                player.Info.LastUsedLeBot = DateTime.Now;
-
-                if (players.Length > 0)
-                {
-                    // Filter out hidden players, and sort
-                    Player[] visiblePlayers = players.Where(player.CanSee).OrderBy(p => p, PlayerListSorter.Instance).ToArray();
-
-                    if (visiblePlayers.Length == 0)
+                    Player target = Server.FindPlayerOrPrintMatches(player, targetName, false, true);
+                    if (targetName == null)
                     {
-                        Server.Message("{0}&f: LeBot, Players", player.ClassyName);
-                        Server.Message("&0LeBot&f: There are no players {0}", qualifier);
+                        player.Message("&ePlease type in a player's name to give bits towards.");
+                        return;
                     }
-                    
-                    else if (visiblePlayers.Length <= PlayersPerPage || player.IsSuper)
+                    if (target == null)
                     {
-                        Server.Message("{0}&f: LeBot, Players", player.ClassyName);
-                        Server.Message("&0LeBot&f: &SThere are {0} players {1}: {2}", visiblePlayers.Length, qualifier, visiblePlayers.JoinToClassyString());
+                        return;
                     }
-                    
                     else
                     {
-                        if (offset >= visiblePlayers.Length)
+                        if (!int.TryParse(amount, out amountnum))
                         {
-                            offset = Math.Max(0, visiblePlayers.Length - PlayersPerPage);
-                        }
-                        Server.Message("{0}&f: LeBot, Players", player.ClassyName);
-                        Player[] playersPart = visiblePlayers.Skip(offset).Take(PlayersPerPage).ToArray();
-                        Server.Message("&0LeBot&f: &SPlayers {0}: {1}",
-                                                qualifier, playersPart.JoinToClassyString());
-
-                        if (offset + playersPart.Length < visiblePlayers.Length)
+                            player.Message("&eThe amount must be a number with no decimals foo'!");
+                            return;
+                        }                      
+                        if (cmd.IsConfirmed)
                         {
-                            Server.Message("{0}&f: LeBot, Players", player.ClassyName);
-                            Server.Message("&0LeBot&f: Showing {0}-{1} (out of {2}). Next: &H/Lb Players {3}{1}",
-                                            offset + 1, offset + playersPart.Length,
-                                            visiblePlayers.Length);
+                            //actually give the player the money
+                            int tNewMoney = target.Info.Money + amountnum;
+                            player.Message("&eYou have given {0} &C{1} &ebit(s).", target.ClassyName, amountnum);
+                            target.Message("&e{0} &ehas given you {1} &ebit(s).", player.ClassyName, amountnum);
+                            Server.Players.Except(target).Except(player).Message("&e{0} &ewas given {1} &ebit(s) from {2}&e.", target.ClassyName, amountnum, player.ClassyName);
+                            target.Info.Money = tNewMoney;
+                            return;
                         }
                         else
                         {
-                            Server.Message("{0}&f: LeBot, Players", player.ClassyName);
-                            Server.Message("&0LeBot&f: Showing players {0}-{1} (out of {2}).",
-                                            offset + 1, offset + playersPart.Length,
-                                            visiblePlayers.Length);
+                            player.Confirm(cmd, "&eAre you sure you want to give {0} &C{1} &ebits?", target.ClassyName, amountnum);
+                            return;
                         }
+
                     }
                 }
-                else
+                if (option == "take")
                 {
-                    Server.Message("{0}&f: LeBot, Players", player.ClassyName);
-                    Server.Message("&0LeBot&f: There are no players {0}", qualifier);
+                    if (!player.Can(Permission.ManageEconomy))
+                    {
+                        player.Message("You do not have the required permisions to use that command!");
+                        return;
+                    }
+                    Player target = Server.FindPlayerOrPrintMatches(player, targetName, false, true);
+                    if (targetName == null)
+                    {
+                        player.Message("&ePlease type in a player's name to take bits away from.");
+                        return;
+                    }
+                    if (target == null)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        if (!int.TryParse(amount, out amountnum))
+                        {
+                            player.Message("&eThe amount must be a number!");
+                            return;
+                        }
+
+                        if (cmd.IsConfirmed)
+                        {
+                            if (amountnum > target.Info.Money)
+                            {
+                                player.Message("{0}&e doesn't have that many bits!", target.ClassyName);
+                                return;
+                            }
+                            else
+                            {
+                                //actually give the player the money
+                                int tNewMoney = target.Info.Money - amountnum;
+                                player.Message("&eYou have taken &c{1}&e from {0}.", target.ClassyName, amountnum);
+                                target.Message("&e{0} &ehas taken {1} &ebit(s) from you.", player.ClassyName, amountnum);
+                                Server.Players.Except(target).Except(player).Message("&e{0} &etook {1} &ebit(s) from {2}&e.", player.ClassyName, amountnum, target.ClassyName);
+                                target.Info.Money = tNewMoney;
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            player.Confirm(cmd, "&eAre you sure you want to take &c{1} &ebits from {0}?", target.ClassyName, amountnum);
+                            return;
+                        }
+
+                    }
+
+                    
+                }
+
+                else if (option == "show")
+                {
+                    Player target = Server.FindPlayerOrPrintMatches(player, targetName, false, true);
+                    if (targetName == null)
+                    {
+                        player.Message("&ePlease type in a player's name to see how many bits they have.");
+                        return;
+                    }
+
+                    if (target == null)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        //actually show how much money that person has
+                        player.Message("&e{0}&e has &C{1}&e bits currently!", target.ClassyName, target.Info.Money);
+                    }
+
+                }
+                else 
+                {
+                    player.Message("&eValid choices are '/economy take', '/economy give', and '/economy show.'");
+                    return;
+                }
+            }
+            catch (ArgumentNullException)
+            {
+                CdEconomy.PrintUsage(player);
+            }
+        }
+        #endregion 
+
+        static readonly CommandDescriptor CdBanAll = new CommandDescriptor
+        {
+            Name = "BanAll",
+            Category = CommandCategory.Moderation,
+            IsConsoleSafe = true,
+            Permissions = new[] { Permission.Ban, Permission.BanIP, Permission.BanAll },
+            Usage = "/BanAll PlayerName|IPAddress [Reason]",
+            Help = "&SBans the player's name, IP, and all other names associated with the IP. " +
+                   "UndoAll's the playername. If player is not online, " +
+                   "the last known IP associated with the name is used. " +
+                   "You can also type in the IP address directly. " +
+                   "Any text after PlayerName/IP will be saved as a memo. ",
+            Handler = BanAllHandler
+        };
+
+        static void BanAllHandler(Player player, Command cmd)
+        {
+            string targetNameOrIP = cmd.Next();
+            if (targetNameOrIP == null)
+            {
+                CdBanAll.PrintUsage(player);
+                return;
+            }
+            string reason = cmd.NextAll();
+
+            IPAddress targetAddress;
+            if (Server.IsIP(targetNameOrIP) && IPAddress.TryParse(targetNameOrIP, out targetAddress))
+            {
+                try
+                {
+                    targetAddress.BanAll(player, reason, true, true);
+                }
+                catch (PlayerOpException ex)
+                {
+                    player.Message(ex.MessageColored);
                 }
             }
             else
             {
-                player.Message("LegendCraft Bot. Options are [help], [spleef], [go], [server], [joke], [time], [promos], [bans], [kicks], [players], [blocks], and [funfact].");
-                return;
+                PlayerInfo target = PlayerDB.FindPlayerInfoOrPrintMatches(player, targetNameOrIP);
+                if (target == null) return;
+                try
+                {
+                    if (target.LastIP.Equals(IPAddress.Any) || target.LastIP.Equals(IPAddress.None))
+                    {
+                        target.Ban(player, reason, true, true);
+                    }
+                    else
+                    {
+                        target.BanAll(player, reason, true, true);
+                        BuildingCommands.UndoAllHandler(player, new Command("/UndoAll " + target.Name));
+                    }
+                }
+                catch (PlayerOpException ex)
+                {
+                    player.Message(ex.MessageColored);
+                    if (ex.ErrorCode == PlayerOpExceptionCode.ReasonRequired)
+                    {
+                        FreezeIfAllowed(player, target);
+                    }
+                }
             }
-
-
-        }
-        #endregion
-
-        static readonly CommandDescriptor CdFortuneCookie = new CommandDescriptor
-        {
-            Name = "FortuneCookie",
-            Aliases = new[] { "FC", "Fortune" },
-            Category = CommandCategory.Chat,
-            Permissions = new Permission[] { Permission.Chat },
-            IsConsoleSafe = true,
-            Usage = "/FortuneCookie",
-            Help = "Reads you your fortune",
-            NotRepeatable = true,
-            Handler = FCHandler,
-        };
-
-        static void FCHandler(Player player, Command cmd)
-        {
-            player.Message("You ate the fortune cookie, here is your fortune!");
-
-            string[] msgStrings = { "&3You will die in your life time.",
-                                      "&3Early to bed, early to rise, makes a man healthy, wealthy, and tired.",
-                                      "&3About time someone got me out of that stale cookie.",
-                                      "&3Ignore previous fortune.",
-                                      "&3You are not illiterate.",
-                                      "&3Only listen to the fortune cookie. Disregard all other fortune telling units.",
-                                      "&3This is not the fortune cookie you are looking for.",
-                                      "&3That wasn't actually a cookie you just ate...",
-                                      "&3Warning, do not break open or eat your fortune cookie.",
-                                      "&3You may still be hungry. Order takeout now.",
-                                      "&3There is something you wanted to ask?",
-                                      "&3For the last time, I am not a fortune, just a small piece of paper.",
-                                      "&3Durka Durka, Muhammed Jihad.",
-                                      "&3Just focus on the cookie because this fortune sucks...",
-                                      "&3How many people eat the cookie and don't even look at the fortune? I guess you aren't one of those people...",
-                                      "&3You know, being a cookie is really crummy.",
-                                      "&3A wise man once told me that fortunes are bollocks.",
-                                      "&3Focus is the key to being successful in life."};
-            Random RandmsgString = new Random();
-            player.Message(msgStrings[RandmsgString.Next(0, msgStrings.Length)]);
-
-            string[] numStrings = { " &cLucky Numbers:&e 1,2,3,4,5",
-                                      " &cLucky Numbers:&e 0,0,0,0,0",
-                                      " &cLucky Numbers:&e .5,0,-1,10035,poop",
-                                      " &cLucky Numbers:&e 1,2,1,2,1",
-                                      " &cLucky Numbers:&e p,o,o,p,y",
-                                      " &cLucky Numbers:&e 18,11,22,36,8",
-                                      " &cLucky Numbers:&e 11,7,68,0,0",
-                                      " &cLucky Numbers:&e 11,11,11,12,11",
-                                      " &cLucky Numbers:&e M,II,XL,IV,V",
-                                      " &cLucky Numbers:&e 3,2,1,2,1",
-                                      " &cLucky Numbers:&e 8,6,7,5,3,0,9",
-                                      " &cLucky Numbers:&e en,tre,sju,sex,femton",
-                                      " &cLucky Numbers:&e 1,10,100,1000,10000",
-                                      " &cLucky Numbers:&e 19,12,3,45,6",
-                                      " &cLucky Numbers:&e 2,4,8,16,32",
-                                      " &cLucky Numbers:&e 1,11,12,23,35",
-                                      " &cLucky Numbers:&e 1,23,4,17,26",
-                                      " &cLucky Numbers:&e 4,9,16,33,46",};
-            Random RandnumString = new Random();
-            player.Message(numStrings[RandnumString.Next(0, numStrings.Length)]);
-
         }
 
-
-
-
-        static readonly CommandDescriptor CdSTFU = new CommandDescriptor
+        static readonly CommandDescriptor CdAssassinate = new CommandDescriptor
         {
-            Name = "STFU",
-            Aliases = new string[] { "ShutUp", "TrollMute" },
-            Category = CommandCategory.Chat | CommandCategory.Fun,
-            Permissions = new[] { Permission.STFU },
+            Name = "Assasinate",
+            Category = CommandCategory.Fun | CommandCategory.Fun,
+            Aliases = new[] { "Snipe", "Assassinate" },
             IsConsoleSafe = true,
-            Usage = "/STFU playername",
-            Help = "'Mutes' a player for 999m.",
+            Permissions = new[] { Permission.Kill },
+            Help = "Silently kills a player.",
             NotRepeatable = true,
-            Handler = STFUHandler,
+            Usage = "/assassinate playername",
+            Handler = AssassinateHandler
         };
 
-
-        static void STFUHandler(Player player, Command cmd)
+        internal static void AssassinateHandler(Player player, Command cmd)
         {
             string name = cmd.Next();
+            if (name == null)
+            {
+                player.Message("Please enter a name.");
+                return;
+            }
+            if (!player.Info.IsHidden)
+            {
+                player.Message("You can only assassinate while hidden silly head.");
+                return;
+            }
+            else
+            {
 
-            if (name == null) //If no name is given.
+                Player target = Server.FindPlayerOrPrintMatches(player, name, false, true);
+                if (target == null) return;
+                if (target.Immortal)
+                {
+                    player.Message("&SYou can't assassinate {0}&S, they're immortal.", target.ClassyName);
+                    return;
+                }
+
+                if (player.Can(Permission.Kill, target.Info.Rank))
+                {
+                    target.TeleportTo(player.World.Map.Spawn);
+
+                    target.Message("&8You were just assassinated!");
+
+                    player.Message("&8Successfully assassinated {0}.", target.ClassyName);
+                }
+                if (target == player)
+                {
+                    Server.Message("{1} killed itself in confusion!", player.ClassyName);
+                    return;
+                }
+
+                if (target == null)
+                {
+                    player.Message("Please enter a victim's name.");
+                    return;
+                }
+                else
+                {
+                    if (player.Can(Permission.Kill, target.Info.Rank))
+                    {
+                        target.TeleportTo(player.World.Map.Spawn);
+
+                    }
+                    else
+                    {
+                        player.Message("You can only assassinate players ranked {0}&S or lower.",
+                                        player.Info.Rank.GetLimit(Permission.Kill).ClassyName);
+                        player.Message("{0}&S is ranked {1}.", target.ClassyName, target.Info.Rank.ClassyName);
+                    }
+                }
+            }
+        }
+
+
+
+        static readonly CommandDescriptor CdPunch = new CommandDescriptor
+        {
+            Name = "Punch",
+            Aliases = new string[] { "Pu" },
+            Category = CommandCategory.Chat | CommandCategory.Fun,
+            Permissions = new[] { Permission.Brofist },
+            IsConsoleSafe = true,
+            Help = "&aPunches &Sa player. " +
+        "Availble items are: groin, stomach, tits, and knockout.\n" +
+        "NOTE: Items are optional.",
+            Usage = "/Punch playerName item",
+            Handler = PunchHandler
+        };
+
+
+        static void PunchHandler(Player player, Command cmd)
+        {
+            string name = cmd.Next();
+            string item = cmd.Next();
+            if (name == null)
             {
                 player.Message("Please enter a name");
                 return;
             }
-
-
             Player target = Server.FindPlayerOrPrintMatches(player, name, false, true);
-
-            if (target == player)
-            {
-                player.Message("You cannot mute yourself.");
-                return;
-            }
-
             if (target == null) return;
-
-            if (player.Can(Permission.Slap, target.Info.Rank))
-            { //Broadcasts a server message saying the player is muted, even thought they are not.
-                Server.Players.CanSee(target).Except(target).Message("&sPlayer {0}&6*&s was muted by {1}&s for 999m.", target.ClassyName, player.ClassyName);
-                IRC.PlayerSomethingMessage(player, "muted", target, null);
-                target.Message("&sYou were muted by {0}&s for 999m.", player.ClassyName);
-                return;
-            }
-            else //meaning if the player cant use the command
+            if (target.Immortal)
             {
-                player.Message("You can only mute players ranked {0}&S or lower", player.Info.Rank.GetLimit(Permission.Mute).ClassyName);
-            }
-        }
-
-
-
-        static readonly CommandDescriptor CdCredits = new CommandDescriptor
-        {
-            Name = "Credits",
-            Aliases = new string[] { "credit" },
-            Category = CommandCategory.Chat,
-            Permissions = new[] { Permission.Chat },
-            IsConsoleSafe = true,
-            Usage = "/credits",
-            Help = "&8Displays the credits of LegendCraft",
-            NotRepeatable = true,
-            Handler = CreditsHandler,
-        };
-
-
-        static void CreditsHandler(Player player, Command cmd)
-        {
-            player.Message(" LegendCraft was developed by LeChosenOne and DingusBungus. LegendCraft was based off of 800Craft developed by Jonty800, GlennMR, and Lao Tszy. 800Craft was based off of fCraft developed by fragmer. Thanks to everyone who contributed to these softwares. And thank you for using LegendCraft!");
-        }
-        static readonly CommandDescriptor CdBanHammer = new CommandDescriptor
-        {
-            Name = "BanHammer",
-            Aliases = new string[] { "Bh" },
-            Category = CommandCategory.Chat,
-            Permissions = new[] { Permission.Ban },
-            IsConsoleSafe = false,
-            Usage = "/banhammer",
-            Help = "&8Activate thou banhammer!.",
-            NotRepeatable = true,
-            Handler = BanHammerHandler,
-        };
-
-
-
-
-        static void BanHammerHandler(Player player, Command cmd)
-        {
-            Server.Message("{0}&W has activated the &0Banhammer!", player.ClassyName);
-        }
-
-        static readonly CommandDescriptor CdBroFist = new CommandDescriptor
-        {
-            Name = "Brofist",
-            Aliases = new string[] { "Bf" },
-            Category = CommandCategory.Chat | CommandCategory.Fun,
-            Permissions = new[] { Permission.Brofist },
-            IsConsoleSafe = true,
-            Usage = "/Brofist playername",
-            Help = "&8Brofists &Sa given player.",
-            NotRepeatable = true,
-            Handler = BrofistHandler,
-        };
-
-
-
-
-        static void BrofistHandler(Player player, Command cmd)
-        {
-            string targetName = cmd.Next();
-            if (targetName == null)
-            {
-                player.Message("Enter a playername.");
-                return;
-            }
-            Player target = Server.FindPlayerOrPrintMatches(player, targetName, false, true);
-            if (target == null)
-            {
-                player.MessageNoPlayer(targetName);
+                player.Message("&SYou failed to &aPunch {0}&S, they are immortal", target.ClassyName);
                 return;
             }
             if (target == player)
             {
-                Server.Players.CanSee(target).Except(target).Message("{1}&S just tried to &8Brofist &Sthemsleves...", target.ClassyName, player.ClassyName);
-                IRC.PlayerSomethingMessage(player, "brofisted", target, null);
-                player.Message("&SYou just tried to &8Brofist &Syourself... That's sad...");
+                player.Message("&sYou can't &aPunch &syourself, Weirdo!");
                 return;
             }
-            Server.Players.CanSee(target).Except(target).Message("{1}&S gave {0}&S a &8Brofist&S.", target.ClassyName, player.ClassyName);
-            IRC.PlayerSomethingMessage(player, "brofisted", target, null);
-            target.Message("{0}&S's fist met yours for a &8Brofist&S.", player.ClassyName);
-        }
-
-
-
-
-
-        static readonly CommandDescriptor CdMad = new CommandDescriptor
-        {
-            Name = "Mad",
-            Category = CommandCategory.Chat,
-            IsConsoleSafe = false,
-            Permissions = new[] { Permission.EditPlayerDB },
-            Usage = "/mad PlayerName",
-            Help = "&SHe mad. (Protip: Use /mad playername again to make the player not mad anymore)>",
-            Handler = MadHandler
-        };
-
-        static void MadHandler(Player player, Command cmd)
-        {
-            string targetName = cmd.Next();
-            string mad = "mad";
-
-            try
+            double time = (DateTime.Now - player.Info.LastUsedSlap).TotalSeconds;
+            if (time < 10)
             {
-                Player target = Server.FindPlayerOrPrintMatches(player, targetName, false, true);
-                if (target == player)
+                player.Message("&WYou can use /Punch again in " + Math.Round(10 - time) + " seconds.");
+                return;
+            }
+            string aMessage;
+            if (player.Can(Permission.Slap, target.Info.Rank))
+            {
+                Position slap = new Position(target.Position.X, target.Position.Y, (target.World.Map.Bounds.ZMax) * 32);
+                target.TeleportTo(slap);
+                if (string.IsNullOrEmpty(item))
                 {
-                    player.Message("You can't make yourself mad!");
+                    Server.Players.CanSee(target).Union(target).Message("{0} &Swas &aPunched &Sin the &cFace &Sby {1}", target.ClassyName, player.ClassyName);
+                    IRC.PlayerSomethingMessage(player, "punched", target, null);
+                    player.Info.LastUsedSlap = DateTime.Now;
                     return;
                 }
-                if (target == null)
-                {
-                    player.Message("No player found matching {0}!", target.ClassyName);
-                    return;
-                }
-                if (player.Can(Permission.EditPlayerDB, target.Info.Rank))
-                {
-                    PlayerInfo info = PlayerDB.FindPlayerInfoOrPrintMatches(player, targetName);
-                    if (target.Info.isMad == false | target.Info.isJelly == false)
-                    {
-                        if (info == null) return;
-                        string oldDisplayedName = target.Info.DisplayedName;
-                        target.Info.DisplayedName = mad;
-
-                        if (oldDisplayedName == null)
-                        {
-                            Server.Message("&W{0} = mad", info.Name);
-                            target.Info.isMad = true;
-                        }
-
-                        else
-                        {
-                            Server.Message("&W{0] = mad",
-                                            info.Name);
-
-                        }
-                    }
-                    else
-                    {
-                        player.Message("Target's name was reset!");
-                        target.Info.isMad = false;
-                        target.Info.isJelly = false;
-                        target.Info.DisplayedName = target.Info.Name;
-                    }
-                }
+                else if (item.ToLower() == "groin")
+                    aMessage = String.Format("{0} &Swas &aPunched &Sin the &cGroin &Sby {1}", target.ClassyName, player.ClassyName);
+                else if (item.ToLower() == "stomach")
+                    aMessage = String.Format("{0} &Swas &aPunched &Sin the &cStomach &Sby {1}", target.ClassyName, player.ClassyName);
+                else if (item.ToLower() == "tits")
+                    aMessage = String.Format("{0} &Swas &aPunched &Sright in the &cTits &Sby {1}", target.ClassyName, player.ClassyName);
+                else if (item.ToLower() == "knockout")
+                    aMessage = String.Format("{0} &Swas &cKnocked Out &Sby {1}", target.ClassyName, player.ClassyName);
                 else
                 {
-                    player.Message("&W You can only make players mad ranked {0}&W and below", player.Info.Rank.GetLimit(Permission.EditPlayerDB).ClassyName);
+                    Server.Players.CanSee(target).Union(target).Message("{0} &Swas &aPunched &Sin the &cFace &Sby {1}", target.ClassyName, player.ClassyName);
+                    IRC.PlayerSomethingMessage(player, "punched", target, null);
+                    player.Info.LastUsedSlap = DateTime.Now;
+                    return;
                 }
-            }
-            
-            catch (ArgumentNullException)
-            {
-                player.Message("Expected format: /mad playername.");
-            }
-        }
-        static readonly CommandDescriptor CdGive = new CommandDescriptor
-        {
-            Name = "Give",
-            Aliases = new string[] { "lend" },
-            Category = CommandCategory.Chat,
-            Permissions = new Permission[] { Permission.Teleport },
-            RepeatableSelection = true,
-            IsConsoleSafe = true,
-            Usage = "/Give [playername] [item] [amount]",
-            Help = "Gives a player somethin` useful.",
-            Handler = Give,
-        };
-
-        internal static void Give(Player player, Command cmd)
-        {
-            string targetName = cmd.Next();
-            if (targetName == null)
-            {
-                player.Message("&WPlease insert a playername");
-                return;
-            }
-            Player target = Server.FindPlayerOrPrintMatches(player, targetName, false, true);
-            if (target == null)
-            {
-                player.MessageNoPlayer(targetName);
-                return;
-            }
-            if (target == player)
-            {
-                player.Message("&WYou cannot give yourself something.");
-                return;
-            }
-            string item = cmd.Next();
-            if (item == null)
-            {
-                player.Message("&WPlease insert an item.");
-                return;
-            }
-            string itemnumber = cmd.Next();
-            if (itemnumber == null)
-            {
-                player.Message("&WPlease insert the item number.");
+                Server.Players.CanSee(target).Union(target).Message(aMessage);
+                IRC.PlayerSomethingMessage(player, "punched", target, null);
+                player.Info.LastUsedSlap = DateTime.Now;
                 return;
             }
             else
             {
-                Server.Players.CanSee(target).Message("{0} &egave {1} &e{2} {3}.", player.ClassyName, target.ClassyName, itemnumber, item);
+                player.Message("&sYou can only Punch players ranked {0}&S or lower",
+                               player.Info.Rank.GetLimit(Permission.Slap).ClassyName);
+                player.Message("{0}&S is ranked {1}", target.ClassyName, target.Info.Rank.ClassyName);
             }
         }
-        static readonly CommandDescriptor CdJelly = new CommandDescriptor
+
+        static readonly CommandDescriptor CdMuteAll = new CommandDescriptor
         {
-            Name = "Jelly",
-            Category = CommandCategory.Chat,
-            IsConsoleSafe = false,
-            Permissions = new[] { Permission.EditPlayerDB },
-            Usage = "/jelly PlayerName",
-            Help = "&SHe jelly",
-            Handler = JellyHandler
+            Name = "MuteAll",
+            Aliases = new[] { "quiet" },
+            Category = CommandCategory.Moderation,
+            IsConsoleSafe = true,
+            Permissions = new[] { Permission.MuteAll },
+            Usage = "/Muteall [duration] [s/h/d/w]",
+            Help = "Mutes all chat feed for the specified time. 30 seconds is the time limit. To unmuteall, type /muteall 1s",
+            Handler = MuteAllHandler
         };
 
-        static void JellyHandler(Player player, Command cmd)
+        internal static void MuteAllHandler(Player player, Command cmd)
         {
-            string targetName = cmd.Next();
-            string jelly = "jelly";
-
-            try
+            string timeString = cmd.Next();
+            TimeSpan duration;
+            // validate command parameters
+            if (String.IsNullOrEmpty(timeString) ||
+                    !timeString.TryParseMiniTimespan(out duration) || duration <= TimeSpan.Zero)
             {
-                Player target = Server.FindPlayerOrPrintMatches(player, targetName, false, true);
-                if (target == player)
+                player.Message("&H/Muteall Duration");
+                return;
+            }
+            TimeSpan MaxMuteDuration = TimeSpan.FromSeconds(30);
+            // check if given time exceeds maximum (30 seconds)
+            if (duration > MaxMuteDuration)
+            {
+                player.Message("Maximum mute duration is {0}.", MaxMuteDuration.ToMiniString());
+                duration = MaxMuteDuration;
+
+            } //check to keep limit under
+
+            foreach (Player target in Server.Players.Where(p => p.World != null && p != player))
+            {
+                // actually mute
+                try
                 {
-                    player.Message("You can't make yourself jealous!");
-                    return;
+
+                    target.Info.Mute(player, duration, false, true);
                 }
-                if (target == null)
+                catch (PlayerOpException ex)
                 {
-                    player.Message("No players found matching {0}", target.ClassyName);
-                    return;
-                }
-                if (player.Can(Permission.EditPlayerDB, target.Info.Rank))
-                {
-                    PlayerInfo info = PlayerDB.FindPlayerInfoOrPrintMatches(player, targetName);
-                    if (info == null) return;
-                    string oldDisplayedName = info.DisplayedName;
-                    info.DisplayedName = jelly;
-
-                    if (target.Info.isMad == false | target.Info.isJelly == false)
-                    {
-
-                        if (oldDisplayedName == null)
-                        {
-                            Server.Message("&W{0} = Jelly", info.Name);
-
-                        }
-
-                        else
-                        {
-                            Server.Message("&W{0] = Jelly",
-                                        info.Name);
-
-                        }
-                    }
-                    else
-                    {
-                        player.Message("Target's name was reset!");
-                        target.Info.isJelly = false;
-                        target.Info.isMad = false;
-                        target.Info.DisplayedName = target.Info.Name;
-                    }
-                }
-                else
-                {
-                    player.Message("&W You can only make players jelly ranked {0}&W and below", player.Info.Rank.GetLimit(Permission.EditPlayerDB).ClassyName);
+                    player.Message(ex.MessageColored);
                 }
             }
-            catch (ArgumentNullException)
+            string message = cmd.Next();
+            if (message == null)
             {
-                player.Message("Expected format: /mad playername.");
-            } 
+                Server.Message(" {0}&W has muted the chat feed for {1}&W seconds!", player.ClassyName, timeString);
+            }
         }
 
         #endregion
 
         #region 800Craft
 
-        //Copyright (C) <2012> <Jon Baker, Glenn Mariën and Lao Tszy>
+        //Copyright (C) <2012>  <Jon Baker, Glenn Mariën and Lao Tszy>
 
         //This program is free software: you can redistribute it and/or modify
         //it under the terms of the GNU General Public License as published by
@@ -987,902 +609,1860 @@ THE SOFTWARE.*/
 
         //This program is distributed in the hope that it will be useful,
         //but WITHOUT ANY WARRANTY; without even the implied warranty of
-        //MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+        //MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
         //GNU General Public License for more details.
 
         //You should have received a copy of the GNU General Public License
-        //along with this program. If not, see <http://www.gnu.org/licenses/>.
+        //along with this program.  If not, see <http://www.gnu.org/licenses/>.
+        public static List<string> BassText = new List<string>();
+
+        static readonly CommandDescriptor CdTitle = new CommandDescriptor
+        {
+            Name = "Title",
+            Category = CommandCategory.Moderation,
+            IsConsoleSafe = true,
+            Permissions = new[] { Permission.EditPlayerDB },
+            Usage = "/Title <Playername> <Title>",
+            Help = "&SChanges or sets a player's title.",
+            Handler = TitleHandler
+        };
+
+        static void TitleHandler(Player player, Command cmd)
+        {
+            string targetName = cmd.Next();
+            string titleName = cmd.NextAll();
+
+            if (string.IsNullOrEmpty(targetName))
+            {
+                CdTitle.PrintUsage(player);
+                return;
+            }
+
+            PlayerInfo info = PlayerDB.FindPlayerInfoOrPrintMatches(player, targetName);
+            if (info == null) return;
+            string oldTitle = info.TitleName;
+            if (titleName.Length == 0) titleName = null;
+            if (titleName == info.TitleName)
+            {
+                if (titleName == null)
+                {
+                    player.Message("Title: Title for {0} is not set.",
+                                    info.Name);
+                }
+                else
+                {
+                    player.Message("Title: Title for {0} is already set to \"{1}&S\"",
+                                    info.Name,
+                                    titleName);
+                }
+                return;
+            }
+            //check the title, is it a title?
+            if (titleName != null)
+            {
+                string StripT = Color.StripColors(titleName);
+                if (!StripT.StartsWith("[") && !StripT.EndsWith("]"))
+                {
+                    titleName = info.Rank.Color + "[" + titleName + info.Rank.Color + "] ";
+                }
+            }
+            info.TitleName = titleName;
+
+            if (oldTitle == null)
+            {
+                player.Message("Title: Title for {0} set to \"{1}&S\"",
+                                info.Name,
+                                titleName);
+            }
+            else if (titleName == null)
+            {
+                player.Message("Title: Title for {0} was reset (was \"{1}&S\")",
+                                info.Name,
+                                oldTitle);
+            }
+            else
+            {
+                player.Message("Title: Title for {0} changed from \"{1}&S\" to \"{2}&S\"",
+                                info.Name,
+                                oldTitle,
+                                titleName);
+            }
+        }
+
+        static readonly CommandDescriptor CdImmortal = new CommandDescriptor
+        {
+            Name = "Immortal",
+            Aliases = new [] { "Invincible", "God" },
+            Category = CommandCategory.Moderation,
+            IsConsoleSafe = true,
+            Permissions = new[] { Permission.Immortal },
+            Help = "Stops death by all things.",
+            NotRepeatable = true,
+            Usage = "/Immortal",
+            Handler = ImmortalHandler
+        };
+
+        internal static void ImmortalHandler(Player player, Command cmd)
+        {
+            if (player.Immortal){
+                player.Immortal = false;
+                Server.Players.Message("{0}&S is no longer Immortal", player.ClassyName);
+                return;
+            }
+            player.Immortal = true;
+            Server.Players.Message("{0}&S is now Immortal", player.ClassyName);
+        }
+        
+        
+        static readonly CommandDescriptor CdKill = new CommandDescriptor
+        {
+            Name = "Kill",
+            Category = CommandCategory.Moderation | CommandCategory.Fun,
+            Aliases = new[] { "Slay" },
+            IsConsoleSafe = false,
+            Permissions = new[] { Permission.Kill },
+            Help = "Kills a player.",
+            NotRepeatable = true,
+            Usage = "/Kill playername",
+            Handler = KillHandler
+        };
+
+        internal static void KillHandler(Player player, Command cmd)
+        {
+            string name = cmd.Next();
+            if (name == null){
+                player.Message("Please enter a name");
+                return;
+            }
+
+            Player target = Server.FindPlayerOrPrintMatches(player, name, false, true);
+            if (target == null) return;
+            if (target.Immortal)
+            {
+                player.Message("&SYou failed to kill {0}&S, they are immortal", target.ClassyName);
+                return;
+            }
+
+            if (target == player){
+                player.Message("You suicidal bro?");
+                return;
+            }
+            double time = (DateTime.Now - player.Info.LastUsedKill).TotalSeconds;
+            if (time < 10){
+                player.Message("&WYou can use /Kill again in " + Math.Round(10 - time) + " seconds.");
+                return;
+            }
+            if (target == null){
+                player.Message("You need to enter a player name to Kill");
+                return;
+            }else {
+                if (player.Can(Permission.Kill, target.Info.Rank)){
+                    target.TeleportTo(player.World.Map.Spawn);
+                    player.Info.LastUsedKill = DateTime.Now;
+                    Server.Players.CanSee(target).Message("{0}&C was &4Killed&C by {1}", target.ClassyName, player.ClassyName);
+                    return;
+                }else{
+                    player.Message("You can only Kill players ranked {0}&S or lower",
+                                    player.Info.Rank.GetLimit(Permission.Kill).ClassyName);
+                    player.Message("{0}&S is ranked {1}", target.ClassyName, target.Info.Rank.ClassyName);
+                }
+            }
+        }
+        
+        static readonly CommandDescriptor CdSlap = new CommandDescriptor
+        {
+            Name = "Slap",
+            IsConsoleSafe = true,
+            NotRepeatable = true,
+            Aliases = new[] { "Sky" },
+            Category = CommandCategory.Moderation | CommandCategory.Fun,
+            Permissions = new[] { Permission.Slap },
+            Help = "Slaps a player to the sky. " +
+            "Available items are: bakingtray, fish, bitchslap, and shoe.",
+            Usage = "/Slap <playername> [item]",
+            Handler = Slap
+        };
+
+        static void Slap(Player player, Command cmd)
+        {
+            string name = cmd.Next();
+            string item = cmd.Next();
+            if (name == null){
+                player.Message("Please enter a name");
+                return;
+            }
+            Player target = Server.FindPlayerOrPrintMatches(player, name, false, true);
+            if (target == null) return;
+            if (target.Immortal){
+                player.Message("&SYou failed to slap {0}&S, they are immortal", target.ClassyName);
+                return;
+            }
+            if (target == player){
+                player.Message("&sYou can't slap yourself.... What's wrong with you???");
+                return;
+            }
+            double time = (DateTime.Now - player.Info.LastUsedSlap).TotalSeconds;
+            if (time < 10){
+                player.Message("&WYou can use /Slap again in " + Math.Round(10 - time) + " seconds.");
+                return;
+            }
+            string aMessage;
+            if (player.Can(Permission.Slap, target.Info.Rank)){
+                Position slap = new Position(target.Position.X, target.Position.Y, (target.World.Map.Bounds.ZMax) * 32);
+                target.TeleportTo(slap);
+                if (string.IsNullOrEmpty(item)){
+                    Server.Players.CanSee(target).Union(target).Message("{0} &Swas slapped sky high by {1}", target.ClassyName, player.ClassyName);
+                    IRC.PlayerSomethingMessage(player, "slapped", target, null);
+                    player.Info.LastUsedSlap = DateTime.Now;
+                    return;
+                }
+                else if (item.ToLower() == "bakingtray")
+                    aMessage = String.Format("{0} &Swas slapped by {1}&S with a Baking Tray", target.ClassyName, player.ClassyName);
+                else if (item.ToLower() == "fish")
+                    aMessage = String.Format("{0} &Swas slapped by {1}&S with a Giant Fish", target.ClassyName, player.ClassyName);
+                else if (item.ToLower() == "bitchslap")
+                    aMessage = String.Format("{0} &Swas bitch-slapped by {1}", target.ClassyName, player.ClassyName);
+                else if (item.ToLower() == "shoe")
+                    aMessage = String.Format("{0} &Swas slapped by {1}&S with a Shoe", target.ClassyName, player.ClassyName);
+                else{
+                    Server.Players.CanSee(target).Union(target).Message("{0} &Swas slapped sky high by {1}", target.ClassyName, player.ClassyName);
+                    IRC.PlayerSomethingMessage(player, "slapped", target, null);
+                    player.Info.LastUsedSlap = DateTime.Now;
+                    return;
+                }
+                Server.Players.CanSee(target).Union(target).Message(aMessage);
+                IRC.PlayerSomethingMessage(player, "slapped", target, null);
+                player.Info.LastUsedSlap = DateTime.Now;
+                return;
+            }else{
+                player.Message("&sYou can only Slap players ranked {0}&S or lower",
+                               player.Info.Rank.GetLimit(Permission.Slap).ClassyName);
+                player.Message("{0}&S is ranked {1}", target.ClassyName, target.Info.Rank.ClassyName);
+            }
+        }
+
+        static readonly CommandDescriptor CdTPZone = new CommandDescriptor
+        {
+            Name = "Tpzone",
+            IsConsoleSafe = false,
+            Aliases = new[] { "tpz", "zonetp" },
+            Category = CommandCategory.World | CommandCategory.Zone,
+            Permissions = new[] { Permission.Teleport },
+            Help = "Teleports you to the centre of a Zone listed in /Zones.",
+            Usage = "/tpzone ZoneName",
+            Handler = TPZone
+        };
+
+        static void TPZone(Player player, Command cmd)
+        {
+            string zoneName = cmd.Next();
+            if (zoneName == null){
+                player.Message("No zone name specified. See &W/Help tpzone");
+                return;
+            }else{
+                Zone zone = player.World.Map.Zones.Find(zoneName);
+                if (zone == null){
+                    player.MessageNoZone(zoneName);
+                    return;
+                }
+                Position zPos = new Position((((zone.Bounds.XMin + zone.Bounds.XMax) / 2) * 32),
+                    (((zone.Bounds.YMin + zone.Bounds.YMax) / 2) * 32),
+                    (((zone.Bounds.ZMin + zone.Bounds.ZMax) / 2) + 2) * 32);
+                player.TeleportTo((zPos));
+                player.Message("&WTeleporting you to zone " + zone.ClassyName);
+            }
+        }
+
+        static readonly CommandDescriptor CdImpersonate = new CommandDescriptor
+        {
+            Name = "Impersonate",
+            Category = CommandCategory.Moderation | CommandCategory.Fun,
+            IsConsoleSafe = true,
+            Permissions = new[] { Permission.EditPlayerDB },
+            Help = "&SChanges to players skin to a desired name. " + 
+            "If no playername is given, all changes are reverted. " + 
+            "Note: The name above your head changes too",
+            Usage = "/Impersonate PlayerName",
+            Handler = ImpersonateHandler
+        };
+
+        static void ImpersonateHandler(Player player, Command cmd)
+        {
+            //entityChanged should be set to true for the skin update to happen in real time
+            string iName = cmd.Next();
+            if (iName == null && player.iName == null){
+                CdImpersonate.PrintUsage(player);
+                return;
+            }
+            if (iName == null){
+                player.iName = null;
+                player.entityChanged = true;
+                player.Message("&SAll changes have been removed and your skin has been updated");
+                return;
+            }
+            //ignore isvalidname for percent codes to work
+            if (player.iName == null){
+                player.Message("&SYour name has changed from '" + player.Info.Rank.Color + player.Name + "&S' to '" + iName);
+            }
+            if (player.iName != null){
+                player.Message("&SYour name has changed from '" + player.iName + "&S' to '" + iName);
+            }
+            player.iName = iName;
+            player.entityChanged = true;
+        }
+
+        static readonly CommandDescriptor CdTempBan = new CommandDescriptor
+        {
+            Name = "Tempban",
+            Category = CommandCategory.Moderation,
+            IsConsoleSafe = true,
+            Aliases = new[] { "tban" },
+            Permissions = new[] { Permission.TempBan },
+            Help = "Bans a player for a selected amount of time. Example: 10s | 10 m | 10h ",
+            Usage = "/Tempban Player Duration",
+            Handler = Tempban
+        };
+
+        static void Tempban(Player player, Command cmd)
+        {
+            string targetName = cmd.Next();
+            string timeString = cmd.Next();
+            TimeSpan duration;
+            try{
+                if (String.IsNullOrEmpty(targetName) || String.IsNullOrEmpty(timeString) ||
+                !timeString.TryParseMiniTimespan(out duration) || duration <= TimeSpan.Zero)
+                {
+                    CdTempBan.PrintUsage(player);
+                    return;
+                }
+            }catch (OverflowException){
+                player.Message("TempBan: Given duration is too long.");
+                return;
+            }
+
+            // find the target
+            PlayerInfo target = PlayerDB.FindPlayerInfoOrPrintMatches(player, targetName);
+
+            if (target == null){
+                player.MessageNoPlayer(targetName);
+                return;
+            };
+
+            if (target.Name == player.Name){
+                player.Message("Trying to T-Ban yourself? Fail!");
+                return;
+            }
+
+            // check permissions
+            if (!player.Can(Permission.BanIP, target.Rank)){
+                player.Message("You can only Temp-Ban players ranked {0}&S or lower.",
+                                player.Info.Rank.GetLimit(Permission.BanIP).ClassyName);
+                player.Message("{0}&S is ranked {1}", target.ClassyName, target.Rank.ClassyName);
+                return;
+            }
+
+            // do the banning
+            if (target.Tempban(player.Name, duration)){
+                string reason = cmd.NextAll();
+                try{
+                    Player targetPlayer = target.PlayerObject;
+                    target.Ban(player, "You were Banned for " + timeString, false, true);
+                    Server.TempBans.Add(targetPlayer);
+                }
+                catch (PlayerOpException ex){
+                    player.Message(ex.MessageColored);
+                }
+                Scheduler.NewTask(t => Untempban(player, target)).RunOnce(duration);
+                Server.Message("&SPlayer {0}&S was Banned by {1}&S for {2}",
+                                target.ClassyName, player.ClassyName, duration.ToMiniString());
+                if (reason.Length > 0) Server.Message("&Wreason: {0}", reason);
+                Logger.Log(LogType.UserActivity, "Player {0} was Banned by {1} for {2}",
+                            target.Name, player.Name, duration.ToMiniString());
+            }else{
+                player.Message("Player {0}&S is already Banned by {1}&S for {2:0} more.",
+                                target.ClassyName,
+                                target.BannedBy,
+                                target.BannedUntil.Subtract(DateTime.UtcNow).ToMiniString());
+            }
+        }
+
+        public static void Untempban(Player player, PlayerInfo target)
+        {
+            if (!target.IsBanned) return;
+            else
+                target.Unban(player, "Tempban Expired", true, true);
+        }
+
+        static readonly CommandDescriptor CdBasscannon = new CommandDescriptor
+        {
+            Name = "Basscannon",
+            Category = CommandCategory.Moderation | CommandCategory.Fun,
+            IsConsoleSafe = true,
+            Aliases = new[] { "bc" },
+            IsHidden = false,
+            Permissions = new[] { Permission.Basscannon },
+            Usage = "Let the Basscannon 'Kick' it!",
+            Help = "A classy way to kick players from the server",
+            Handler = Basscannon
+        };
+
+        internal static void Basscannon(Player player, Command cmd)
+        {
+            string name = cmd.Next();
+            string reason = cmd.NextAll();
+
+            if (name == null)
+            {
+                player.Message("Please enter a player name to use the basscannon on.");
+                return;
+            }
+
+            Player target = Server.FindPlayerOrPrintMatches(player, name, false, true);
+
+            if (target == null)
+            {
+                return;
+            }
+
+            if (ConfigKey.RequireKickReason.Enabled() && String.IsNullOrEmpty(reason))
+            {
+                player.Message("&WPlease specify a reason: &W/Basscannon PlayerName Reason");
+                // freeze the target player to prevent further damage
+                return;
+            }
+
+            if (player.Can(Permission.Kick, target.Info.Rank))
+            {
+                target.Info.IsHidden = false;
+
+                try
+                {
+                    Player targetPlayer = target;
+                    target.BassKick(player, reason, LeaveReason.Kick, true, true, true);
+                    if (BassText.Count < 1){
+                        BassText.Add("Flux Pavillion does not approve of your behavior");
+                        BassText.Add("Let the Basscannon KICK IT!");
+                        BassText.Add("WUB WUB WUB WUB WUB WUB!");
+                        BassText.Add("Basscannon, Basscannon, Basscannon, Basscannon!");
+                        BassText.Add("Pow pow POW!!!");
+                    }
+                    string line = BassText[new Random().Next(0, BassText.Count)].Trim();
+                    if (line.Length == 0) return;
+                    Server.Message("&9{0}", line);
+                }
+                catch (PlayerOpException ex)
+                {
+                    player.Message(ex.MessageColored);
+                    if (ex.ErrorCode == PlayerOpExceptionCode.ReasonRequired)
+                        return;
+                }
+            }
+            else
+            {
+                player.Message("You can only use /Basscannon on players ranked {0}&S or lower",
+                                player.Info.Rank.GetLimit(Permission.Kick).ClassyName);
+                player.Message("{0}&S is ranked {1}", target.ClassyName, target.Info.Rank.ClassyName);
+            }
+        }
+
+        static readonly CommandDescriptor CdWarn = new CommandDescriptor
+        {
+            Name = "Warn",
+            Category = CommandCategory.Moderation,
+            IsConsoleSafe = true,
+            NotRepeatable = true,
+            Permissions = new[] { Permission.Warn },
+            Help = "&SWarns a player and puts a black star next to their name for 20 minutes. During the 20 minutes, if they are warned again, they will get kicked.",
+            Usage = "/Warn playername",
+            Handler = Warn
+        };
+
+        internal static void Warn(Player player, Command cmd)
+        {
+            string name = cmd.Next();
+
+            if (name == null)
+            {
+                player.Message("No player specified.");
+                return;
+            }
+
+            Player target = Server.FindPlayerOrPrintMatches(player, name, false, true);
+
+            if (target == null)
+            {
+                player.MessageNoPlayer(name);
+                return;
+            }
+
+            if (player.Can(Permission.Warn, target.Info.Rank))
+            {
+                target.Info.IsHidden = false;
+                if (target.Info.Warn(player.Name))
+                {
+                    Server.Message("{0}&S has been warned by {1}",
+                                      target.ClassyName, player.ClassyName);
+                    Scheduler.NewTask(t => target.Info.UnWarn()).RunOnce(TimeSpan.FromMinutes(15));
+                }
+                else
+                {
+                    try
+                    {
+                        Player targetPlayer = target;
+                        target.Kick(player, "Auto Kick (2 warnings or more)", LeaveReason.Kick, true, true, true);
+                    }
+                    catch (PlayerOpException ex)
+                    {
+                        player.Message(ex.MessageColored);
+                        if (ex.ErrorCode == PlayerOpExceptionCode.ReasonRequired)
+                            return;
+                    }
+                }
+            }
+            else
+            {
+                player.Message("You can only warn players ranked {0}&S or lower",
+                                player.Info.Rank.GetLimit(Permission.Warn).ClassyName);
+                player.Message("{0}&S is ranked {1}", target.ClassyName, target.Info.Rank.ClassyName);
+            }
+        }
+
+        static readonly CommandDescriptor CdUnWarn = new CommandDescriptor
+        {
+            Name = "Unwarn",
+            Aliases = new string[] { "uw" },
+            Category = CommandCategory.Moderation,
+            IsConsoleSafe = true,
+            Permissions = new[] { Permission.Warn },
+            Usage = "/Unwarn PlayerName",
+            Help = "&SUnwarns a player",
+            Handler = UnWarn
+        };
+
+        internal static void UnWarn(Player player, Command cmd)
+        {
+            string name = cmd.Next();
+            if (name == null)
+            {
+                player.Message("No player specified.");
+                return;
+            }
+
+            Player target = Server.FindPlayerOrPrintMatches(player, name, false, true);
+
+            if (target == null)
+            {
+                player.MessageNoPlayer(name);
+                return;
+            }
+
+            if (player.Can(Permission.Warn, target.Info.Rank))
+            {
+                if (target.Info.UnWarn())
+                {
+                    Server.Message("{0}&S had their warning removed by {1}.", target.ClassyName, player.ClassyName);
+                }
+                else
+                {
+                    player.Message("{0}&S does not have a warning.", target.ClassyName);
+                }
+            }
+            else
+            {
+                player.Message("You can only unwarn players ranked {0}&S or lower",
+                                player.Info.Rank.GetLimit(Permission.Warn).ClassyName);
+                player.Message("{0}&S is ranked {1}", target.ClassyName, target.Info.Rank.ClassyName);
+            }
+        }
+
+
+        static readonly CommandDescriptor CdDisconnect = new CommandDescriptor
+        {
+            Name = "Disconnect",
+            Category = CommandCategory.Moderation,
+            IsConsoleSafe = true,
+            Aliases = new[] { "gtfo" },
+            IsHidden = false,
+            Permissions = new[] { Permission.Gtfo },
+            Usage = "/disconnect playername",
+            Help = "Get rid of those annoying people without saving to PlayerDB",
+            Handler = dc
+        };
+
+        internal static void dc(Player player, Command cmd)
+        {
+            string name = cmd.Next();
+            if (name == null)
+            {
+                player.Message("Please enter a name");
+                return;
+            }
+
+            Player target = Server.FindPlayerOrPrintMatches(player, name, false, true);
+            if (target == null) return;
+
+            if (player.Can(Permission.Gtfo, target.Info.Rank))
+            {
+                try
+                {
+                    Player targetPlayer = target;
+                    target.Kick(player, "Manually disconnected by " + player.Name, LeaveReason.Kick, false, true, false);
+                    Server.Players.Message("{0} &Swas manually disconnected by {1}", target.ClassyName, player.ClassyName);
+                }
+                catch (PlayerOpException ex)
+                {
+                    player.Message(ex.MessageColored);
+                    if (ex.ErrorCode == PlayerOpExceptionCode.ReasonRequired)
+                        return;
+                }
+            }
+            else
+            {
+                player.Message("You can only Disconnect players ranked {0}&S or lower",
+                                player.Info.Rank.GetLimit(Permission.Gtfo).ClassyName);
+                player.Message("{0}&S is ranked {1}", target.ClassyName, target.Info.Rank.ClassyName);
+            }
+        }
+        #endregion
+
+        #region Ban / Unban
+
+        static readonly CommandDescriptor CdBan = new CommandDescriptor {
+            Name = "Ban",
+            Category = CommandCategory.Moderation,
+            IsConsoleSafe = true,
+            Permissions = new[] { Permission.Ban },
+            Usage = "/Ban PlayerName [Reason]",
+            Help = "&SBans a specified player by name. Note: Does NOT ban IP. " +
+                   "Any text after the player name will be saved as a memo. ",
+            Handler = BanHandler
+        };
+
+        static void BanHandler( Player player, Command cmd ) {
+            string targetName = cmd.Next();
+            if( targetName == null ) {
+                CdBan.PrintUsage( player );
+                return;
+            }
+            PlayerInfo target = PlayerDB.FindPlayerInfoOrPrintMatches( player, targetName );
+            if( target == null ) return;
+            string reason = cmd.NextAll();
+            try {
+                Player targetPlayer = target.PlayerObject;
+                target.Ban( player, reason, true, true );
+                WarnIfOtherPlayersOnIP( player, target, targetPlayer );
+            } catch( PlayerOpException ex ) {
+                player.Message( ex.MessageColored );
+                if( ex.ErrorCode == PlayerOpExceptionCode.ReasonRequired ) {
+                    FreezeIfAllowed( player, target );
+                }
+            }
+        }
+
+
+
+        static readonly CommandDescriptor CdBanIP = new CommandDescriptor {
+            Name = "BanIP",
+            Category = CommandCategory.Moderation,
+            IsConsoleSafe = true,
+            Permissions = new[] { Permission.Ban, Permission.BanIP },
+            Usage = "/BanIP PlayerName|IPAddress [Reason]",
+            Help = "&SBans the player's name and IP. If player is not online, last known IP associated with the name is used. " +
+                   "You can also type in the IP address directly. " +
+                   "Any text after PlayerName/IP will be saved as a memo. ",
+            Handler = BanIPHandler
+        };
+
+        static void BanIPHandler( Player player, Command cmd ) {
+            string targetNameOrIP = cmd.Next();
+            if( targetNameOrIP == null ) {
+                CdBanIP.PrintUsage( player );
+                return;
+            }
+            string reason = cmd.NextAll();
+
+            IPAddress targetAddress;
+            if( Server.IsIP( targetNameOrIP ) && IPAddress.TryParse( targetNameOrIP, out targetAddress ) ) {
+                try {
+                    targetAddress.BanIP( player, reason, true, true );
+                } catch( PlayerOpException ex ) {
+                    player.Message( ex.MessageColored );
+                }
+            } else {
+                PlayerInfo target = PlayerDB.FindPlayerInfoOrPrintMatches( player, targetNameOrIP );
+                if( target == null ) return;
+                try {
+                    if( target.LastIP.Equals( IPAddress.Any ) || target.LastIP.Equals( IPAddress.None ) ) {
+                        target.Ban( player, reason, true, true );
+                    } else {
+                        target.BanIP( player, reason, true, true );
+                    }
+                } catch( PlayerOpException ex ) {
+                    player.Message( ex.MessageColored );
+                    if( ex.ErrorCode == PlayerOpExceptionCode.ReasonRequired ) {
+                        FreezeIfAllowed( player, target );
+                    }
+                }
+            }
+        }
 
       
 
-        static readonly CommandDescriptor CdModerate = new CommandDescriptor
-        {
-            Name = "Moderate",
-            Aliases = new[] { "Moderation" },
+        static readonly CommandDescriptor CdUnban = new CommandDescriptor {
+            Name = "Unban",
             Category = CommandCategory.Moderation,
             IsConsoleSafe = true,
-            Permissions = new[] { Permission.Moderation },
-            Help = "Create a server-wide silence, muting all players until called again.",
-            NotRepeatable = true,
-            Usage = "/Moderate [Voice / Devoice] [PlayerName]",
-            Handler = ModerateHandler
+            Permissions = new[] { Permission.Ban },
+            Usage = "/Unban PlayerName [Reason]",
+            Help = "&SRemoves ban for a specified player. Does NOT remove associated IP bans. " +
+                   "Any text after the player name will be saved as a memo. ",
+            Handler = UnbanHandler
         };
 
-        internal static void ModerateHandler(Player player, Command cmd)
-        {
-            string Option = cmd.Next();
-            if (Option == null)
-            {
-                if (Server.Moderation)
-                {
-                    Server.Moderation = false;
-                    Server.Message("{0}&W deactivated server moderation, the chat feed is enabled", player.ClassyName);
-                    IRC.SendAction(player.ClassyName + " &Sdeactivated server moderation, the chat feed is enabled");
-                    Server.VoicedPlayers.Clear();
-                }
-                else
-                {
-                    Server.Moderation = true;
-                    Server.Message("{0}&W activated server moderation, the chat feed is disabled", player.ClassyName);
-                    IRC.SendAction(player.ClassyName + " &Sactivated server moderation, the chat feed is disabled");
-                    if (player.World != null)
-                    { //console safe
-                        Server.VoicedPlayers.Add(player);
-                    }
-                }
-            }
-            else
-            {
-                string name = cmd.Next();
-                if (Option.ToLower() == "voice" && Server.Moderation)
-                {
-                    if (name == null)
-                    {
-                        player.Message("Please enter a player to Voice");
-                        return;
-                    }
-                    Player target = Server.FindPlayerOrPrintMatches(player, name, false, true);
-                    if (target == null) return;
-                    if (Server.VoicedPlayers.Contains(target))
-                    {
-                        player.Message("{0}&S is already voiced", target.ClassyName);
-                        return;
-                    }
-                    Server.VoicedPlayers.Add(target);
-                    Server.Message("{0}&S was given Voiced status by {1}", target.ClassyName, player.ClassyName);
-                    return;
-                }
-                else if (Option.ToLower() == "devoice" && Server.Moderation)
-                {
-                    if (name == null)
-                    {
-                        player.Message("Please enter a player to Devoice");
-                        return;
-                    }
-                    Player target = Server.FindPlayerOrPrintMatches(player, name, false, true);
-                    if (target == null) return;
-                    if (!Server.VoicedPlayers.Contains(target))
-                    {
-                        player.Message("&WError: {0}&S does not have voiced status", target.ClassyName);
-                        return;
-                    }
-                    Server.VoicedPlayers.Remove(target);
-                    player.Message("{0}&S is no longer voiced", target.ClassyName);
-                    target.Message("You are no longer voiced");
-                    return;
-                }
-                else
-                {
-                    player.Message("&WError: Server moderation is not activated");
-                }
-            }
-        }
-
-        static readonly CommandDescriptor CdQuit = new CommandDescriptor
-        {
-            Name = "Quitmsg",
-            Aliases = new[] { "quit", "quitmessage" },
-            Category = CommandCategory.Chat,
-            IsConsoleSafe = false,
-            Permissions = new[] { Permission.Chat },
-            Usage = "/Quitmsg [message]",
-            Help = "Adds a farewell message which is displayed when you leave the server.",
-            Handler = QuitHandler
-        };
-
-        static void QuitHandler(Player player, Command cmd)
-        {
-            string Msg = cmd.NextAll();
-
-            if (Msg.Length < 1)
-            {
-                CdQuit.PrintUsage(player);
+        static void UnbanHandler( Player player, Command cmd ) {
+            string targetName = cmd.Next();
+            if( targetName == null ) {
+                CdUnban.PrintUsage( player );
                 return;
             }
-
-            else
-            {
-                player.Info.LeaveMsg = "left the server: &C" + Msg;
-                player.Message("Your quit message is now set to: {0}", Msg);
+            PlayerInfo target = PlayerDB.FindPlayerInfoOrPrintMatches( player, targetName );
+            if( target == null ) return;
+            string reason = cmd.NextAll();
+            try {
+                target.Unban( player, reason, true, true );
+            } catch( PlayerOpException ex ) {
+                player.Message( ex.MessageColored );
             }
         }
 
 
-        static readonly CommandDescriptor CdRageQuit = new CommandDescriptor
-        {
-            Name = "Ragequit",
-            Aliases = new[] { "rq" },
-            Category = CommandCategory.Chat | CommandCategory.Fun,
-            IsConsoleSafe = false,
-            Permissions = new[] { Permission.RageQuit },
-            Usage = "/Ragequit [reason]",
-            Help = "An anger-quenching way to leave the server.",
-            Handler = RageHandler
+
+        static readonly CommandDescriptor CdUnbanIP = new CommandDescriptor {
+            Name = "UnbanIP",
+            Category = CommandCategory.Moderation,
+            IsConsoleSafe = true,
+            Permissions = new[] { Permission.Ban, Permission.BanIP },
+            Usage = "/UnbanIP PlayerName|IPaddress [Reason]",
+            Help = "&SRemoves ban for a specified player's name and last known IP. " +
+                   "You can also type in the IP address directly. " +
+                   "Any text after the player name will be saved as a memo. ",
+            Handler = UnbanIPHandler
         };
 
-        static void RageHandler(Player player, Command cmd)
-        {
+        static void UnbanIPHandler( Player player, Command cmd ) {
+            string targetNameOrIP = cmd.Next();
+            if( targetNameOrIP == null ) {
+                CdUnbanIP.PrintUsage( player );
+                return;
+            }
             string reason = cmd.NextAll();
 
-            if (reason.Length < 1)
-            {
-                Server.Players.Message("{0} &4Ragequit from the server", player.ClassyName);
-                player.Kick(Player.Console, "Ragequit", LeaveReason.RageQuit, false, false, false);
-                IRC.SendAction(player.ClassyName + " &4Ragequit from the server");
-                return;
-            }
-
-            else
-            {
-                Server.Players.Message("{0} &4Ragequit from the server: &C{1}",
-                                player.ClassyName, reason);
-                IRC.SendAction(player.ClassyName + " &WRagequit from the server: " + reason);
-                player.Kick(Player.Console, reason, LeaveReason.RageQuit, false, false, false);
-            }
-        }
-
-        static readonly CommandDescriptor CdBroMode = new CommandDescriptor
-        {
-            Name = "Bromode",
-            Aliases = new string[] { "bm" },
-            Category = CommandCategory.Chat | CommandCategory.Fun,
-            Permissions = new[] { Permission.BroMode },
-            IsConsoleSafe = true,
-            Usage = "/Bromode",
-            Help = "Toggles bromode.",
-            Handler = BroMode
-        };
-
-        static void BroMode(Player player, Command command)
-        {
-            if (!fCraft.Utils.BroMode.Active)
-            {
-                foreach (Player p in Server.Players)
-                {
-                    fCraft.Utils.BroMode.GetInstance().RegisterPlayer(p);
+            try {
+                IPAddress targetAddress;
+                if( Server.IsIP( targetNameOrIP ) && IPAddress.TryParse( targetNameOrIP, out targetAddress ) ) {
+                    targetAddress.UnbanIP( player, reason, true, true );
+                } else {
+                    PlayerInfo target = PlayerDB.FindPlayerInfoOrPrintMatches( player, targetNameOrIP );
+                    if( target == null ) return;
+                    if( target.LastIP.Equals( IPAddress.Any ) || target.LastIP.Equals( IPAddress.None ) ) {
+                        target.Unban( player, reason, true, true );
+                    } else {
+                        target.UnbanIP( player, reason, true, true );
+                    }
                 }
-                fCraft.Utils.BroMode.Active = true;
-                Server.Players.Message("{0}&S turned Bro mode on.", player.Info.Rank.Color + player.Name);
-
-                IRC.SendAction(player.Name + " turned Bro mode on.");
+            } catch( PlayerOpException ex ) {
+                player.Message( ex.MessageColored );
             }
-            else
-            {
-                foreach (Player p in Server.Players)
-                {
-                    fCraft.Utils.BroMode.GetInstance().UnregisterPlayer(p);
+        }
+
+
+
+        static readonly CommandDescriptor CdUnbanAll = new CommandDescriptor {
+            Name = "UnbanAll",
+            Category = CommandCategory.Moderation,
+            IsConsoleSafe = true,
+            Permissions = new[] { Permission.Ban, Permission.BanIP, Permission.BanAll },
+            Usage = "/UnbanAll PlayerName|IPaddress [Reason]",
+            Help = "&SRemoves ban for a specified player's name, last known IP, and all other names associated with the IP. " +
+                   "You can also type in the IP address directly. " +
+                   "Any text after the player name will be saved as a memo. ",
+            Handler = UnbanAllHandler
+        };
+
+        static void UnbanAllHandler( Player player, Command cmd ) {
+            string targetNameOrIP = cmd.Next();
+            if( targetNameOrIP == null ) {
+                CdUnbanAll.PrintUsage( player );
+                return;
+            }
+            string reason = cmd.NextAll();
+
+            try {
+                IPAddress targetAddress;
+                if( Server.IsIP( targetNameOrIP ) && IPAddress.TryParse( targetNameOrIP, out targetAddress ) ) {
+                    targetAddress.UnbanAll( player, reason, true, true );
+                } else {
+                    PlayerInfo target = PlayerDB.FindPlayerInfoOrPrintMatches( player, targetNameOrIP );
+                    if( target == null ) return;
+                    if( target.LastIP.Equals( IPAddress.Any ) || target.LastIP.Equals( IPAddress.None ) ) {
+                        target.Unban( player, reason, true, true );
+                    } else {
+                        target.UnbanAll( player, reason, true, true );
+                    }
                 }
-
-                fCraft.Utils.BroMode.Active = false;
-                Server.Players.Message("{0}&S turned Bro Mode off.", player.Info.Rank.Color + player.Name);
-                IRC.SendAction(player.Name + " turned Bro mode off");
-            }
-        }
-
-        public static void Player_IsBack(object sender, Events.PlayerMovedEventArgs e)
-        {
-            if (e.Player.IsAway)
-            {
-                // We need to have block positions, so we divide by 32
-                Vector3I oldPos = new Vector3I(e.OldPosition.X / 32, e.OldPosition.Y / 32, e.OldPosition.Z / 32);
-                Vector3I newPos = new Vector3I(e.NewPosition.X / 32, e.NewPosition.Y / 32, e.NewPosition.Z / 32);
-
-                // Check if the player actually moved and not just rotated
-                if ((oldPos.X != newPos.X) || (oldPos.Y != newPos.Y) || (oldPos.Z != newPos.Z))
-                {
-                    Server.Players.Message("{0} &Eis back", e.Player.ClassyName);
-                    e.Player.IsAway = false;
-                }
+            } catch( PlayerOpException ex ) {
+                player.Message( ex.MessageColored );
             }
         }
 
 
-        static readonly CommandDescriptor CdCustomChat = new CommandDescriptor
-        {
-            Name = ConfigKey.CustomChatName.GetString(),
-            Category = CommandCategory.Chat,
-            Aliases = new[] { ConfigKey.CustomAliasName.GetString() },
-            Permissions = new[] { Permission.Chat },
+        static readonly CommandDescriptor CdBanEx = new CommandDescriptor {
+            Name = "BanEx",
+            Category = CommandCategory.Moderation,
             IsConsoleSafe = true,
-            NotRepeatable = true,
-            Usage = "/Customname Message",
-            Help = "Broadcasts your message to all players allowed to read the CustomChatChannel.",
-            Handler = CustomChatHandler
+            Permissions = new[] { Permission.Ban, Permission.BanIP },
+            Usage = "/BanEx +PlayerName&S or &H/BanEx -PlayerName",
+            Help = "&SAdds or removes an IP-ban exemption for an account. " +
+                   "Exempt accounts can log in from any IP, including banned ones.",
+            Handler = BanExHandler
         };
 
-        static void CustomChatHandler(Player player, Command cmd)
-        {
-            if (player.Info.IsMuted)
-            {
-                player.MessageMuted();
+        static void BanExHandler( Player player, Command cmd ) {
+            string playerName = cmd.Next();
+            if( playerName == null || playerName.Length < 2 || (playerName[0] != '-' && playerName[0] != '+') ) {
+                CdBanEx.PrintUsage( player );
                 return;
             }
+            bool addExemption = (playerName[0] == '+');
+            string targetName = playerName.Substring( 1 );
+            PlayerInfo target = PlayerDB.FindPlayerInfoOrPrintMatches( player, targetName );
+            if( target == null ) return;
 
-            if (player.DetectChatSpam()) return;
-
-            string message = cmd.NextAll().Trim();
-            if (message.Length > 0)
-            {
-                if (player.Can(Permission.UseColorCodes) && message.Contains("%"))
-                {
-                    message = Color.ReplacePercentCodes(message);
-                }
-                Chat.SendCustom(player, message);
-            }
-        }
-
-        static readonly CommandDescriptor cdAway = new CommandDescriptor
-        {
-            Name = "Away",
-            Category = CommandCategory.Chat,
-            Aliases = new[] { "afk" },
-            IsConsoleSafe = true,
-            Usage = "/away [optional message]",
-            Help = "Shows an away message.",
-            NotRepeatable = true,
-            Handler = Away
-        };
-
-        internal static void Away(Player player, Command cmd)
-        {
-            string msg = cmd.NextAll().Trim();
-            if (player.Info.IsMuted)
-            {
-                player.MessageMuted();
-                return;
-            }
-            if (msg.Length > 0)
-            {
-                Server.Message("{0}&S &Eis away &9({1})",
-                                  player.ClassyName, msg);
-                player.IsAway = true;
-                return;
-            }
-            else
-            {
-                Server.Players.Message("&S{0} &Eis away &9(Away From Keyboard)", player.ClassyName);
-                player.IsAway = true;
-            }
-        }
-
-
-        static readonly CommandDescriptor CdHigh5 = new CommandDescriptor
-        {
-            Name = "High5",
-            Aliases = new string[] { "H5" },
-            Category = CommandCategory.Chat | CommandCategory.Fun,
-            Permissions = new Permission[] { Permission.HighFive },
-            IsConsoleSafe = true,
-            Usage = "/High5 playername",
-            Help = "High fives a given player.",
-            NotRepeatable = true,
-            Handler = High5Handler,
-        };
-
-        internal static void High5Handler(Player player, Command cmd)
-        {
-            string targetName = cmd.Next();
-            if (targetName == null)
-            {
-                CdHigh5.PrintUsage(player);
-                return;
-            }
-            Player target = Server.FindPlayerOrPrintMatches(player, targetName, false, true);
-            if (target == null)
-                return;
-            if (target == player)
-            {
-                player.Message("&WYou cannot high five yourself.");
-                return;
-            }
-            Server.Players.CanSee(target).Except(target).Message("{0}&S was just &chigh fived &Sby {1}&S", target.ClassyName, player.ClassyName);
-            IRC.PlayerSomethingMessage(player, "high fived", target, null);
-            target.Message("{0}&S high fived you.", player.ClassyName);
-        }
-
-        static readonly CommandDescriptor CdPoke = new CommandDescriptor
-        {
-            Name = "Poke",
-            Category = CommandCategory.Chat | CommandCategory.Fun,
-            IsConsoleSafe = true,
-            Usage = "/poke playername",
-            Help = "&SPokes a Player.",
-            NotRepeatable = true,
-            Handler = PokeHandler
-        };
-
-        internal static void PokeHandler(Player player, Command cmd)
-        {
-            string targetName = cmd.Next();
-            if (targetName == null)
-            {
-                CdPoke.PrintUsage(player);
-                return;
-            }
-            Player target = Server.FindPlayerOrPrintMatches(player, targetName, false, true);
-            if (target == null)
-            {
-                return;
-            }
-            if (target.Immortal)
-            {
-                player.Message("&SYou failed to poke {0}&S, they are immortal", target.ClassyName);
-                return;
-            }
-            if (target == player)
-            {
-                player.Message("You cannot poke yourself.");
-                return;
-            }
-            if (!Player.IsValidName(targetName))
-            {
-                return;
-            }
-            else
-            {
-                target.Message("&8You were just poked by {0}",
-                                  player.ClassyName);
-                player.Message("&8Successfully poked {0}", target.ClassyName);
-            }
-        }
-
-        static readonly CommandDescriptor cdReview = new CommandDescriptor
-        {
-            Name = "Review",
-            Category = CommandCategory.Chat,
-            IsConsoleSafe = true,
-            Usage = "/review",
-            NotRepeatable = true,
-            Help = "&SRequest an Op to review your build.",
-            Handler = Review
-        };
-
-        internal static void Review(Player player, Command cmd)
-        {
-            if (player.Info.IsMuted)
-            {
-                player.MessageMuted();
-                return;
-            }
-            var recepientList = Server.Players.Can(Permission.ReadStaffChat)
-                                              .NotIgnoring(player)
-                                              .Union(player);
-            string message = String.Format("{0}&6 would like staff to check their build", player.ClassyName);
-            recepientList.Message(message);
-            var ReviewerNames = Server.Players
-                                         .CanBeSeen(player)
-                                         .Where(r => r.Can(Permission.Promote, player.Info.Rank));
-            if (ReviewerNames.Count() > 0)
-            {
-                player.Message("&WOnline players who can review you: {0}", ReviewerNames.JoinToString(r => String.Format("{0}&S", r.ClassyName)));
-                return;
-            }
-            else
-                player.Message("&WThere are no players online who can review you. A member of staff needs to be online.");
-        }
-
-        static readonly CommandDescriptor CdAdminChat = new CommandDescriptor
-        {
-            Name = "Adminchat",
-            Aliases = new[] { "ac" },
-            Category = CommandCategory.Chat | CommandCategory.Moderation,
-            Permissions = new[] { Permission.Chat },
-            IsConsoleSafe = true,
-            NotRepeatable = true,
-            Usage = "/Adminchat Message",
-            Help = "Broadcasts your message to admins/owners on the server.",
-            Handler = AdminChat
-        };
-
-        internal static void AdminChat(Player player, Command cmd)
-        {
-            if (player.Info.IsMuted)
-            {
-                player.MessageMuted();
-                return;
-            }
-            if (DateTime.UtcNow < player.Info.MutedUntil)
-            {
-                player.Message("You are muted for another {0:0} seconds.",
-                                player.Info.MutedUntil.Subtract(DateTime.UtcNow).TotalSeconds);
-                return;
-            }
-            string message = cmd.NextAll().Trim();
-            if (message.Length > 0)
-            {
-                if (player.Can(Permission.UseColorCodes) && message.Contains("%"))
-                {
-                    message = Color.ReplacePercentCodes(message);
-                }
-                Chat.SendAdmin(player, message);
-            }
-        }
-
-        #endregion
-
-        #region Say
-
-        static readonly CommandDescriptor CdSay = new CommandDescriptor
-        {
-            Name = "Say",
-            Category = CommandCategory.Chat,
-            IsConsoleSafe = true,
-            NotRepeatable = true,
-            DisableLogging = true,
-            Permissions = new[] { Permission.Chat, Permission.Say },
-            Usage = "/Say Message",
-            Help = "&SShows a message in special color, without the player name prefix. " +
-                   "Can be used for making announcements.",
-            Handler = SayHandler
-        };
-
-        static void SayHandler(Player player, Command cmd)
-        {
-            if (player.Info.IsMuted)
-            {
-                player.MessageMuted();
-                return;
-            }
-
-            if (player.DetectChatSpam()) return;
-
-            if (player.Can(Permission.Say))
-            {
-                string msg = cmd.NextAll().Trim();
-                if (msg.Length > 0)
-                {
-                    Chat.SendSay(player, msg);
-                }
-                else
-                {
-                    CdSay.PrintUsage(player);
-                }
-            }
-            else
-            {
-                player.MessageNoAccess(Permission.Say);
+            switch( target.BanStatus ) {
+                case BanStatus.Banned:
+                    if( addExemption ) {
+                        player.Message( "Player {0}&S is currently banned. Unban before adding an exemption.",
+                                        target.ClassyName );
+                    } else {
+                        player.Message( "Player {0}&S is already banned. There is no exemption to remove.",
+                                        target.ClassyName );
+                    }
+                    break;
+                case BanStatus.IPBanExempt:
+                    if( addExemption ) {
+                        player.Message( "IP-Ban exemption already exists for player {0}", target.ClassyName );
+                    } else {
+                        player.Message( "IP-Ban exemption removed for player {0}",
+                                        target.ClassyName );
+                        target.BanStatus = BanStatus.NotBanned;
+                    }
+                    break;
+                case BanStatus.NotBanned:
+                    if( addExemption ) {
+                        player.Message( "IP-Ban exemption added for player {0}",
+                                        target.ClassyName );
+                        target.BanStatus = BanStatus.IPBanExempt;
+                    } else {
+                        player.Message( "No IP-Ban exemption exists for player {0}",
+                                        target.ClassyName );
+                    }
+                    break;
             }
         }
 
         #endregion
 
 
-        #region Staff
+        #region Kick
 
-        static readonly CommandDescriptor CdStaff = new CommandDescriptor
-        {
-            Name = "Staff",
-            Aliases = new[] { "st" },
-            Category = CommandCategory.Chat | CommandCategory.Moderation,
-            Permissions = new[] { Permission.Chat },
-            NotRepeatable = true,
+        static readonly CommandDescriptor CdKick = new CommandDescriptor {
+            Name = "Kick",
+            Aliases = new[] { "k" },
+            Category = CommandCategory.Moderation,
             IsConsoleSafe = true,
-            DisableLogging = true,
-            Usage = "/Staff Message",
-            Help = "Broadcasts your message to all operators/moderators on the server at once.",
-            Handler = StaffHandler
+            Permissions = new[] { Permission.Kick },
+            Usage = "/Kick PlayerName [Reason]",
+            Help = "Kicks the specified player from the server. " +
+                   "Optional kick reason/message is shown to the kicked player and logged.",
+            Handler = KickHandler
         };
 
-        static void StaffHandler(Player player, Command cmd)
-        {
-            if (player.Info.IsMuted)
-            {
-                player.MessageMuted();
-                return;
-            }
-
-            if (player.DetectChatSpam()) return;
-
-            string message = cmd.NextAll().Trim();
-            if (message.Length > 0)
-            {
-                Chat.SendStaff(player, message);
-            }
-        }
-
-        #endregion
-
-
-        #region Ignore / Unignore
-
-        static readonly CommandDescriptor CdIgnore = new CommandDescriptor
-        {
-            Name = "Ignore",
-            Category = CommandCategory.Chat,
-            IsConsoleSafe = true,
-            Usage = "/Ignore [PlayerName]",
-            Help = "&STemporarily blocks the other player from messaging you. " +
-                   "If no player name is given, lists all ignored players.",
-            Handler = IgnoreHandler
-        };
-
-        static void IgnoreHandler(Player player, Command cmd)
-        {
+        static void KickHandler( Player player, Command cmd ) {
             string name = cmd.Next();
-            if (name != null)
-            {
-                if (cmd.HasNext)
-                {
-                    CdIgnore.PrintUsage(player);
+            if( name == null ) {
+                player.Message( "Usage: &H/Kick PlayerName [Message]" );
+                return;
+            }
+
+            // find the target
+            Player target = Server.FindPlayerOrPrintMatches( player, name, false, true );
+            if( target == null ) return;
+
+            string reason = cmd.NextAll();
+            DateTime previousKickDate = target.Info.LastKickDate;
+            string previousKickedBy = target.Info.LastKickByClassy;
+            string previousKickReason = target.Info.LastKickReason;
+
+            // do the kick
+            try {
+                Player targetPlayer = target;
+                target.Kick( player, reason, LeaveReason.Kick, true, true, true );
+                WarnIfOtherPlayersOnIP( player, target.Info, targetPlayer );
+
+            } catch( PlayerOpException ex ) {
+                player.Message( ex.MessageColored );
+                if( ex.ErrorCode == PlayerOpExceptionCode.ReasonRequired ) {
+                    FreezeIfAllowed( player, target.Info );
+                }
+                return;
+            }
+
+            // warn player if target has been kicked before
+            if( target.Info.TimesKicked > 1 ) {
+                player.Message( "Warning: {0}&S has been kicked {1} times before.",
+                                target.ClassyName, target.Info.TimesKicked - 1 );
+                if( previousKickDate != DateTime.MinValue ) {
+                    player.Message( "Most recent kick was {0} ago, by {1}",
+                                    DateTime.UtcNow.Subtract( previousKickDate ).ToMiniString(),
+                                    previousKickedBy );
+                }
+                if( !String.IsNullOrEmpty( previousKickReason ) ) {
+                    player.Message( "Most recent kick reason was: {0}",
+                                    previousKickReason );
+                }
+            }
+        }
+
+        #endregion
+
+
+        #region Changing Rank (Promotion / Demotion)
+
+        static readonly CommandDescriptor CdRank = new CommandDescriptor {
+            Name = "Rank",
+            Aliases = new[] { "user", "promote", "demote" },
+            Category = CommandCategory.Moderation,
+            Permissions = new[] { Permission.Promote, Permission.Demote },
+            AnyPermission = true,
+            IsConsoleSafe = true,
+            Usage = "/Rank PlayerName RankName [Reason]",
+            Help = "Changes the rank of a player to a specified rank. " +
+                   "Any text specified after the RankName will be saved as a memo.",
+            Handler = RankHandler
+        };
+
+        public static void RankHandler( Player player, Command cmd ) {
+            string name = cmd.Next();
+            string newRankName = cmd.Next();
+
+            // Check arguments
+            if( name == null || newRankName == null ) {
+                CdRank.PrintUsage( player );
+                player.Message( "See &H/Ranks&S for list of ranks." );
+                return;
+            }
+
+            // Parse rank name
+            Rank newRank = RankManager.FindRank( newRankName );
+            if( newRank == null ) {
+                player.MessageNoRank( newRankName );
+                return;
+            }
+
+            // Parse player name
+            if( name == "-" ) {
+                if( player.LastUsedPlayerName != null ) {
+                    name = player.LastUsedPlayerName;
+                } else {
+                    player.Message( "Cannot repeat player name: you haven't used any names yet." );
                     return;
                 }
-                PlayerInfo targetInfo = PlayerDB.FindPlayerInfoOrPrintMatches(player, name);
-                if (targetInfo == null) return;
-
-                if (player.Ignore(targetInfo))
-                {
-                    player.MessageNow("You are now ignoring {0}", targetInfo.ClassyName);
-                }
-                else
-                {
-                    player.MessageNow("You are already ignoring {0}", targetInfo.ClassyName);
-                }
-
             }
-            else
-            {
-                PlayerInfo[] ignoreList = player.IgnoreList;
-                if (ignoreList.Length > 0)
-                {
-                    player.MessageNow("Ignored players: {0}", ignoreList.JoinToClassyString());
-                }
-                else
-                {
-                    player.MessageNow("You are not currently ignoring anyone.");
-                }
-                return;
-            }
-        }
+            PlayerInfo targetInfo = PlayerDB.FindPlayerInfoExact( name );
 
-
-        static readonly CommandDescriptor CdUnignore = new CommandDescriptor
-        {
-            Name = "Unignore",
-            Category = CommandCategory.Chat,
-            IsConsoleSafe = true,
-            Usage = "/Unignore PlayerName",
-            Help = "Unblocks the other player from messaging you.",
-            Handler = UnignoreHandler
-        };
-
-        static void UnignoreHandler(Player player, Command cmd)
-        {
-            string name = cmd.Next();
-            if (name != null)
-            {
-                if (cmd.HasNext)
-                {
-                    CdUnignore.PrintUsage(player);
+            if( targetInfo == null ) {
+                if( !player.Can( Permission.EditPlayerDB ) ) {
+                    player.MessageNoPlayer( name );
                     return;
                 }
-                PlayerInfo targetInfo = PlayerDB.FindPlayerInfoOrPrintMatches(player, name);
-                if (targetInfo == null) return;
-
-                if (player.Unignore(targetInfo))
-                {
-                    player.MessageNow("You are no longer ignoring {0}", targetInfo.ClassyName);
+                if( !Player.IsValidName( name ) ) {
+                    player.MessageInvalidPlayerName( name );
+                    CdRank.PrintUsage( player );
+                    return;
                 }
-                else
-                {
-                    player.MessageNow("You are not currently ignoring {0}", targetInfo.ClassyName);
+                if( cmd.IsConfirmed ) {
+                    if( newRank > RankManager.DefaultRank ) {
+                        targetInfo = PlayerDB.AddFakeEntry( name, RankChangeType.Promoted );
+                    } else {
+                        targetInfo = PlayerDB.AddFakeEntry( name, RankChangeType.Demoted );
+                    }
+                } else {
+                    player.Confirm( cmd,
+                                    "Warning: Player \"{0}\" is not in the database (possible typo). Type the full name or",
+                                    name );
+                    return;
                 }
             }
-            else
-            {
-                PlayerInfo[] ignoreList = player.IgnoreList;
-                if (ignoreList.Length > 0)
-                {
-                    player.MessageNow("Ignored players: {0}", ignoreList.JoinToClassyString());
-                }
-                else
-                {
-                    player.MessageNow("You are not currently ignoring anyone.");
-                }
+
+            try {
+                player.LastUsedPlayerName = targetInfo.Name;
+                targetInfo.ChangeRank( player, newRank, cmd.NextAll(), true, true, false );
+            } catch( PlayerOpException ex ) {
+                player.Message( ex.MessageColored );
+            }
+        }
+
+
+        #endregion
+
+
+        #region Hide
+
+        static readonly CommandDescriptor CdHide = new CommandDescriptor {
+            Name = "Hide",
+            Category = CommandCategory.Moderation,
+            Permissions = new[] { Permission.Hide },
+            Usage = "/Hide [silent]",
+            Help = "&SEnables invisible mode. It looks to other players like you left the server, " +
+                   "but you can still do anything - chat, build, delete, type commands - as usual. " +
+                   "Great way to spy on griefers and scare newbies. " +
+                   "Call &H/Unhide&S to reveal yourself.",
+            Handler = HideHandler
+        };
+
+        static void HideHandler( Player player, Command cmd ) {
+            if( player.Info.IsHidden ) {
+                player.Message( "You are already hidden." );
                 return;
             }
+
+            string silentString = cmd.Next();
+            bool silent = false;
+            if( silentString != null ) {
+                silent = silentString.Equals( "silent", StringComparison.OrdinalIgnoreCase );
+            }
+
+            player.Info.IsHidden = true;
+            player.Message( "&8You are now hidden." );
+
+            // to make it look like player just logged out in /Info
+            player.Info.LastSeen = DateTime.UtcNow;
+
+            if( !silent ) {
+                if( ConfigKey.ShowConnectionMessages.Enabled() ) {
+                    Server.Players.CantSee( player ).Message( "&SPlayer {0}&S left the server.", player.ClassyName );
+                }
+                if( ConfigKey.IRCBotAnnounceServerJoins.Enabled() ) {
+                    IRC.PlayerDisconnectedHandler( null, new PlayerDisconnectedEventArgs( player, LeaveReason.ClientQuit, true ) );
+                }
+            }
+
+            // for aware players: notify
+            Server.Players.CanSee( player ).Message( "&SPlayer {0}&S is now hidden.", player.ClassyName );
+
+            Player.RaisePlayerHideChangedEvent( player );
+        }
+
+
+
+        static readonly CommandDescriptor CdUnhide = new CommandDescriptor {
+            Name = "Unhide",
+            Category = CommandCategory.Moderation,
+            Permissions = new[] { Permission.Hide },
+            Usage = "/Unhide [silent]",
+            Help = "&SDisables the &H/Hide&S invisible mode. " +
+                   "It looks to other players like you just joined the server.",
+            Handler = UnhideHandler
+        };
+
+        static void UnhideHandler( Player player, Command cmd ) {
+            if( player.World == null ) PlayerOpException.ThrowNoWorld( player );
+
+            if( !player.Info.IsHidden ) {
+                player.Message( "You are not currently hidden." );
+                return;
+            }
+
+            bool silent = cmd.HasNext;
+
+            // for aware players: notify
+            Server.Players.CanSee( player ).Message( "&SPlayer {0}&S is no longer hidden.",
+                                                     player.ClassyName );
+            player.Message( "&8You are no longer hidden." );
+            player.Info.IsHidden = false;
+            if( !silent ) {
+                if( ConfigKey.ShowConnectionMessages.Enabled() ) {
+                    // ReSharper disable AssignNullToNotNullAttribute
+                    string msg = Server.MakePlayerConnectedMessage( player, false, player.World );
+                    // ReSharper restore AssignNullToNotNullAttribute
+                    Server.Players.CantSee( player ).Message( msg );
+                }
+                if( ConfigKey.IRCBotAnnounceServerJoins.Enabled() ) {
+                    IRC.PlayerReadyHandler( null, new PlayerConnectedEventArgs( player, player.World ) );
+                }
+            }
+
+            Player.RaisePlayerHideChangedEvent( player );
         }
 
         #endregion
 
 
-        #region Me
+        #region Set Spawn
 
-        static readonly CommandDescriptor CdMe = new CommandDescriptor
-        {
-            Name = "Me",
-            Category = CommandCategory.Chat,
-            Permissions = new[] { Permission.Chat },
-            IsConsoleSafe = true,
-            NotRepeatable = true,
-            DisableLogging = true,
-            Usage = "/Me Message",
-            Help = "&SSends IRC-style action message prefixed with your name.",
-            Handler = MeHandler
+        static readonly CommandDescriptor CdSetSpawn = new CommandDescriptor {
+            Name = "SetSpawn",
+            Category = CommandCategory.Moderation | CommandCategory.World,
+            Permissions = new[] { Permission.SetSpawn },
+            Help = "&SAssigns your current location to be the spawn point of the map/world. " +
+                   "If an optional PlayerName param is given, the spawn point of only that player is changed instead.",
+            Usage = "/SetSpawn [PlayerName]",
+            Handler = SetSpawnHandler
         };
 
-        static void MeHandler(Player player, Command cmd)
-        {
-            if (player.Info.IsMuted)
-            {
-                player.MessageMuted();
-                return;
-            }
-
-            if (player.DetectChatSpam()) return;
-
-            string msg = cmd.NextAll().Trim();
-            if (msg.Length > 0)
-            {
-                Chat.SendMe(player, msg);
-            }
-            else
-            {
-                CdMe.PrintUsage(player);
-            }
-        }
-
-        #endregion
+        public static void SetSpawnHandler( Player player, Command cmd ) {
+            World playerWorld = player.World;
+            if( playerWorld == null ) PlayerOpException.ThrowNoWorld( player );
 
 
-        #region Roll
+            string playerName = cmd.Next();
+            if( playerName == null ) {
+                Map map = player.WorldMap;
+                map.Spawn = player.Position;
+                player.TeleportTo( map.Spawn );
+                player.Send( PacketWriter.MakeAddEntity( 255, player.ListName, player.Position ) );
+                player.Message( "New spawn point saved." );
+                Logger.Log( LogType.UserActivity,
+                            "{0} changed the spawned point.",
+                            player.Name );
 
-        static readonly CommandDescriptor CdRoll = new CommandDescriptor
-        {
-            Name = "Roll",
-            Category = CommandCategory.Chat,
-            Permissions = new[] { Permission.Chat },
-            IsConsoleSafe = true,
-            Help = "Gives random number between 1 and 100.\n" +
-                   "&H/Roll MaxNumber\n" +
-                   "&S Gives number between 1 and max.\n" +
-                   "&H/Roll MinNumber MaxNumber\n" +
-                   "&S Gives number between min and max.",
-            Handler = RollHandler
-        };
+            } else if( player.Can( Permission.Bring ) ) {
+                Player[] infos = playerWorld.FindPlayers( player, playerName );
+                if( infos.Length == 1 ) {
+                    Player target = infos[0];
+                    player.LastUsedPlayerName = target.Name;
+                    if( player.Can( Permission.Bring, target.Info.Rank ) ) {
+                        target.Send( PacketWriter.MakeAddEntity( 255, target.ListName, player.Position ) );
+                    } else {
+                        player.Message( "You may only set spawn of players ranked {0}&S or lower.",
+                                        player.Info.Rank.GetLimit( Permission.Bring ).ClassyName );
+                        player.Message( "{0}&S is ranked {1}", target.ClassyName, target.Info.Rank.ClassyName );
+                    }
 
-        static void RollHandler(Player player, Command cmd)
-        {
-            if (player.Info.IsMuted)
-            {
-                player.MessageMuted();
-                return;
-            }
+                } else if( infos.Length > 0 ) {
+                    player.MessageManyMatches( "player", infos );
 
-            if (player.DetectChatSpam()) return;
-
-            Random rand = new Random();
-            int n1;
-            int min, max;
-            if (cmd.NextInt(out n1))
-            {
-                int n2;
-                if (!cmd.NextInt(out n2))
-                {
-                    n2 = 1;
-                }
-                min = Math.Min(n1, n2);
-                max = Math.Max(n1, n2);
-            }
-            else
-            {
-                min = 1;
-                max = 100;
-            }
-
-            int num = rand.Next(min, max + 1);
-            Server.Message(player,
-                            "{0}{1} rolled {2} ({3}...{4})",
-                            player.ClassyName, Color.Silver, num, min, max);
-            player.Message("{0}You rolled {1} ({2}...{3})",
-                            Color.Silver, num, min, max);
-        }
-
-        #endregion
-
-
-        #region Deafen
-
-        static readonly CommandDescriptor CdDeafen = new CommandDescriptor
-        {
-            Name = "Deafen",
-            Aliases = new[] { "deaf" },
-            Category = CommandCategory.Chat,
-            IsConsoleSafe = true,
-            Help = "Blocks all chat messages from being sent to you.",
-            Handler = DeafenHandler
-        };
-
-        static void DeafenHandler(Player player, Command cmd)
-        {
-            if (cmd.HasNext)
-            {
-                CdDeafen.PrintUsage(player);
-                return;
-            }
-            if (!player.IsDeaf)
-            {
-                for (int i = 0; i < LinesToClear; i++)
-                {
-                    player.MessageNow("");
-                }
-                player.MessageNow("Deafened mode: ON");
-                player.MessageNow("You will not see ANY messages until you type &H/Deafen&S again.");
-                player.IsDeaf = true;
-            }
-            else
-            {
-                player.IsDeaf = false;
-                player.MessageNow("Deafened mode: OFF");
-            }
-        }
-
-        #endregion
-
-
-        #region Clear
-
-        const int LinesToClear = 30;
-        static readonly CommandDescriptor CdClear = new CommandDescriptor
-        {
-            Name = "Clear",
-            UsableByFrozenPlayers = true,
-            Category = CommandCategory.Chat,
-            Help = "&SClears the chat screen.",
-            Handler = ClearHandler
-        };
-
-        static void ClearHandler(Player player, Command cmd)
-        {
-            if (cmd.HasNext)
-            {
-                CdClear.PrintUsage(player);
-                return;
-            }
-            for (int i = 0; i < LinesToClear; i++)
-            {
-                player.Message("");
-            }
-        }
-
-        #endregion
-
-
-        #region Timer
-
-        static readonly CommandDescriptor CdTimer = new CommandDescriptor
-        {
-            Name = "Timer",
-            Permissions = new[] { Permission.Say },
-            IsConsoleSafe = true,
-            Category = CommandCategory.Chat,
-            Usage = "/Timer <Duration> <Message>",
-            Help = "&SStarts a timer with a given duration and message. " +
-                   "As the timer counts down, announcements are shown globally. See also: &H/Help Timer Abort",
-            HelpSections = new Dictionary<string, string> {
-                { "abort", "&H/Timer Abort <TimerID>\n&S" +
-                            "Aborts a timer with the given ID number. " +
-                            "To see a list of timers and their IDs, type &H/Timer&S (without any parameters)." }
-            },
-            Handler = TimerHandler
-        };
-
-        static void TimerHandler(Player player, Command cmd)
-        {
-            string param = cmd.Next();
-
-            // List timers
-            if (param == null)
-            {
-                ChatTimer[] list = ChatTimer.TimerList.OrderBy(timer => timer.TimeLeft).ToArray();
-                if (list.Length == 0)
-                {
-                    player.Message("No timers running.");
-                }
-                else
-                {
-                    player.Message("There are {0} timers running:", list.Length);
-                    foreach (ChatTimer timer in list)
-                    {
-                        player.Message(" #{0} \"{1}&S\" (started by {2}, {3} left)",
-                                        timer.Id, timer.Message, timer.StartedBy, timer.TimeLeft.ToMiniString());
+                } else {
+                    infos = Server.FindPlayers( player, playerName, true );
+                    if( infos.Length > 0 ) {
+                        player.Message( "You may only set spawn of players on the same world as you." );
+                    } else {
+                        player.MessageNoPlayer( playerName );
                     }
                 }
+            } else {
+                player.MessageNoAccess( CdSetSpawn );
+            }
+        }
+
+        #endregion
+
+
+        #region Freeze
+
+        static readonly CommandDescriptor CdFreeze = new CommandDescriptor {
+            Name = "Freeze",
+            Aliases = new[] { "f" },
+            Category = CommandCategory.Moderation,
+            IsConsoleSafe = true,
+            Permissions = new[] { Permission.Freeze },
+            Usage = "/Freeze PlayerName",
+            Help = "Freezes the specified player in place. " +
+                   "This is usually effective, but not hacking-proof. " +
+                   "To release the player, use &H/unfreeze PlayerName",
+            Handler = FreezeHandler
+        };
+
+        public static void FreezeHandler( Player player, Command cmd ) {
+            string name = cmd.Next();
+            if( name == null ) {
+                CdFreeze.PrintUsage( player );
                 return;
             }
 
-            // Abort a timer
-            if (param.Equals("abort", StringComparison.OrdinalIgnoreCase))
-            {
-                int timerId;
-                if (cmd.NextInt(out timerId))
-                {
-                    ChatTimer timer = ChatTimer.FindTimerById(timerId);
-                    if (timer == null || !timer.IsRunning)
-                    {
-                        player.Message("Given timer (#{0}) does not exist.", timerId);
-                    }
-                    else
-                    {
-                        timer.Stop();
-                        string abortMsg = String.Format("&Y(Timer) {0}&Y aborted a timer with {1} left: {2}",
-                                                         player.ClassyName, timer.TimeLeft.ToMiniString(), timer.Message);
-                        Chat.SendSay(player, abortMsg);
-                    }
-                }
-                else
-                {
-                    CdTimer.PrintUsage(player);
-                }
+            Player target = Server.FindPlayerOrPrintMatches( player, name, false, true );
+            if( target == null ) return;
+
+            try {
+                target.Info.Freeze( player, true, true );
+            } catch( PlayerOpException ex ) {
+                player.Message( ex.MessageColored );
+            }
+        }
+
+
+        static readonly CommandDescriptor CdUnfreeze = new CommandDescriptor {
+            Name = "Unfreeze",
+            Aliases = new[] { "uf" },
+            Category = CommandCategory.Moderation,
+            IsConsoleSafe = true,
+            Permissions = new[] { Permission.Freeze },
+            Usage = "/Unfreeze PlayerName",
+            Help = "Releases the player from a frozen state. See &H/Help Freeze&S for more information.",
+            Handler = UnfreezeHandler
+        };
+
+        static void UnfreezeHandler( Player player, Command cmd ) {
+            string name = cmd.Next();
+            if( name == null ) {
+                CdFreeze.PrintUsage( player );
                 return;
             }
 
-            // Start a timer
-            if (player.Info.IsMuted)
-            {
-                player.MessageMuted();
+            Player target = Server.FindPlayerOrPrintMatches( player, name, false, true );
+            if( target == null ) return;
+
+            try {
+                target.Info.Unfreeze( player, true, true );
+            } catch( PlayerOpException ex ) {
+                player.Message( ex.MessageColored );
+            }
+        }
+
+        #endregion
+
+
+        #region TP
+
+        static readonly CommandDescriptor CdTP = new CommandDescriptor {
+            Name = "TP",
+            Category = CommandCategory.Moderation,
+            Permissions = new[] { Permission.Teleport },
+            Usage = "/TP PlayerName&S or &H/TP X Y Z",
+            Help = "&STeleports you to a specified player's location. " +
+                   "If coordinates are given, teleports to that location.",
+            Handler = TPHandler
+        };
+
+        static void TPHandler( Player player, Command cmd ) {
+            string name = cmd.Next();
+            if( name == null ) {
+                CdTP.PrintUsage( player );
                 return;
             }
-            if (player.DetectChatSpam()) return;
+
+            if( cmd.Next() != null ) {
+                cmd.Rewind();
+                int x, y, z;
+                if( cmd.NextInt( out x ) && cmd.NextInt( out y ) && cmd.NextInt( out z ) ) {
+
+                    if( x <= -1024 || x >= 1024 || y <= -1024 || y >= 1024 || z <= -1024 || z >= 1024 ) {
+                        player.Message( "Coordinates are outside the valid range!" );
+
+                    } else {
+                        player.TeleportTo( new Position {
+                            X = (short)(x * 32 + 16),
+                            Y = (short)(y * 32 + 16),
+                            Z = (short)(z * 32 + 16),
+                            R = player.Position.R,
+                            L = player.Position.L
+                        } );
+                    }
+                } else {
+                    CdTP.PrintUsage( player );
+                }
+
+            } else {
+                if( name == "-" ) {
+                    if( player.LastUsedPlayerName != null ) {
+                        name = player.LastUsedPlayerName;
+                    } else {
+                        player.Message( "Cannot repeat player name: you haven't used any names yet." );
+                        return;
+                    }
+                }
+                Player[] matches = Server.FindPlayers( player, name, true );
+                if( matches.Length == 1 ) {
+                    Player target = matches[0];
+                    World targetWorld = target.World;
+                    if( targetWorld == null ) PlayerOpException.ThrowNoWorld( target );
+
+                    if( targetWorld == player.World ) {
+                        player.TeleportTo( target.Position );
+
+                    } else {
+                        switch( targetWorld.AccessSecurity.CheckDetailed( player.Info ) ) {
+                            case SecurityCheckResult.Allowed:
+                            case SecurityCheckResult.WhiteListed:
+                                if( targetWorld.IsFull ) {
+                                    player.Message( "Cannot teleport to {0}&S because world {1}&S is full.",
+                                                    target.ClassyName,
+                                                    targetWorld.ClassyName );
+                                    return;
+                                }
+                                player.StopSpectating();
+                                player.JoinWorld( targetWorld, WorldChangeReason.Tp, target.Position );
+                                break;
+                            case SecurityCheckResult.BlackListed:
+                                player.Message( "Cannot teleport to {0}&S because you are blacklisted on world {1}",
+                                                target.ClassyName,
+                                                targetWorld.ClassyName );
+                                break;
+                            case SecurityCheckResult.RankTooLow:
+                                player.Message( "Cannot teleport to {0}&S because world {1}&S requires {2}+&S to join.",
+                                                target.ClassyName,
+                                                targetWorld.ClassyName,
+                                                targetWorld.AccessSecurity.MinRank.ClassyName );
+                                break;
+                            // TODO: case PermissionType.RankTooHigh:
+                        }
+                    }
+
+                } else if( matches.Length > 1 ) {
+                    player.MessageManyMatches( "player", matches );
+
+                } else {
+                    // Try to guess if player typed "/TP" instead of "/Join"
+                    World[] worlds = WorldManager.FindWorlds( player, name );
+
+                    if( worlds.Length == 1 ) {
+                        player.LastUsedWorldName = worlds[0].Name;
+                        player.StopSpectating();
+                        player.ParseMessage( "/Join " + worlds[0].Name, false );
+                    } else {
+                        player.MessageNoPlayer( name );
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+
+        #region Bring / WorldBring / BringAll
+
+        static readonly CommandDescriptor CdBring = new CommandDescriptor {
+            Name = "Bring",
+            IsConsoleSafe = true,
+            Aliases = new[] { "summon", "fetch" },
+            Category = CommandCategory.Moderation,
+            Permissions = new[] { Permission.Bring },
+            Usage = "/Bring PlayerName [ToPlayer]",
+            Help = "Teleports another player to your location. " +
+                   "If the optional second parameter is given, teleports player to another player.",
+            Handler = BringHandler
+        };
+
+        static void BringHandler( Player player, Command cmd ) {
+            string name = cmd.Next();
+            if( name == null ) {
+                CdBring.PrintUsage( player );
+                return;
+            }
+
+            // bringing someone to another player (instead of to self)
+            string toName = cmd.Next();
+            Player toPlayer = player;
+            if( toName != null ) {
+                toPlayer = Server.FindPlayerOrPrintMatches( player, toName, false, true );
+                if( toPlayer == null ) return;
+            } else if( toPlayer.World == null ) {
+                player.Message( "When used from console, /Bring requires both names to be given." );
+                return;
+            }
+
+            World world = toPlayer.World;
+            if( world == null ) PlayerOpException.ThrowNoWorld( toPlayer );
+
+            Player target = Server.FindPlayerOrPrintMatches( player, name, false, true );
+            if( target == null ) return;
+
+            if( !player.Can( Permission.Bring, target.Info.Rank ) ) {
+                player.Message( "You may only bring players ranked {0}&S or lower.",
+                                player.Info.Rank.GetLimit( Permission.Bring ).ClassyName );
+                player.Message( "{0}&S is ranked {1}",
+                                target.ClassyName, target.Info.Rank.ClassyName );
+                return;
+            }
+
+            if( target.World == world ) {
+                // teleport within the same world
+                target.TeleportTo( toPlayer.Position );
+                target.Message("&8You were summoned by {0}", player.ClassyName);
+
+            } else {
+                // teleport to a different world
+                SecurityCheckResult check = world.AccessSecurity.CheckDetailed( target.Info );
+                if( check == SecurityCheckResult.RankTooHigh || check == SecurityCheckResult.RankTooLow ) {
+                    if( player.CanJoin( world ) ) {
+                        if( cmd.IsConfirmed ) {
+                            BringPlayerToWorld( player, target, world, true, true );
+                        } else {
+                            player.Confirm( cmd,
+                                            "Player {0}&S is ranked too low to join {1}&S. Override world permissions?",
+                                            target.ClassyName,
+                                            world.ClassyName );
+                        }
+                    } else {
+                        player.Message( "Neither you nor {0}&S are allowed to join world {1}",
+                                        target.ClassyName, world.ClassyName );
+                    }
+                } else {
+                    BringPlayerToWorld( player, target, world, false, true );
+                    target.Message("&8You were summoned by {0}", player.ClassyName);
+                }
+            }
+        }
+
+
+        static readonly CommandDescriptor CdWorldBring = new CommandDescriptor {
+            Name = "WBring",
+            IsConsoleSafe = true,
+            Category = CommandCategory.Moderation,
+            Permissions = new[] { Permission.Bring },
+            Usage = "/WBring PlayerName WorldName",
+            Help = "&STeleports a player to the given world's spawn.",
+            Handler = WorldBringHandler
+        };
+
+        static void WorldBringHandler( Player player, Command cmd ) {
+            string playerName = cmd.Next();
+            string worldName = cmd.Next();
+            if( playerName == null || worldName == null ) {
+                CdWorldBring.PrintUsage( player );
+                return;
+            }
+
+            Player target = Server.FindPlayerOrPrintMatches( player, playerName, false, true );
+            World world = WorldManager.FindWorldOrPrintMatches( player, worldName );
+
+            if( target == null || world == null ) return;
+
+            if( target == player ) {
+                player.Message( "&WYou cannot &H/WBring&W yourself." );
+                return;
+            }
+
+            if( !player.Can( Permission.Bring, target.Info.Rank ) ) {
+                player.Message( "You may only bring players ranked {0}&S or lower.",
+                                player.Info.Rank.GetLimit( Permission.Bring ).ClassyName );
+                player.Message( "{0}&S is ranked {1}",
+                                target.ClassyName, target.Info.Rank.ClassyName );
+                return;
+            }
+
+            if( world == target.World ) {
+                player.Message( "Player {0}&S is already in world {1}&S. They were brought to spawn.",
+                                target.ClassyName, world.ClassyName );
+                target.TeleportTo( target.WorldMap.Spawn );
+                return;
+            }
+
+            SecurityCheckResult check = world.AccessSecurity.CheckDetailed( target.Info );
+            if( check == SecurityCheckResult.RankTooHigh || check == SecurityCheckResult.RankTooLow ) {
+                if( player.CanJoin( world ) ) {
+                    if( cmd.IsConfirmed ) {
+                        BringPlayerToWorld( player, target, world, true, false );
+                    } else {
+                        player.Confirm( cmd,
+                                        "Player {0}&S is ranked too low to join {1}&S. Override world permissions?",
+                                        target.ClassyName,
+                                        world.ClassyName );
+                    }
+                } else {
+                    player.Message( "Neither you nor {0}&S are allowed to join world {1}",
+                                    target.ClassyName, world.ClassyName );
+                }
+            } else {
+                BringPlayerToWorld( player, target, world, false, false );
+            }
+        }
+
+
+        static readonly CommandDescriptor CdBringAll = new CommandDescriptor {
+            Name = "BringAll",
+            Category = CommandCategory.Moderation,
+            Permissions = new[] { Permission.Bring, Permission.BringAll },
+            Usage = "/BringAll [@Rank [@AnotherRank]] [*|World [AnotherWorld]]",
+            Help = "&STeleports all players from your world to you. " +
+                   "If any world names are given, only teleports players from those worlds. " +
+                   "If any rank names are given, only teleports players of those ranks.",
+            Handler = BringAllHandler
+        };
+
+        static void BringAllHandler( Player player, Command cmd ) {
+            if( player.World == null ) PlayerOpException.ThrowNoWorld( player );
+
+            List<World> targetWorlds = new List<World>();
+            List<Rank> targetRanks = new List<Rank>();
+            bool allWorlds = false;
+            bool allRanks = true;
+
+            // Parse the list of worlds and ranks
+            string arg;
+            while( (arg = cmd.Next()) != null ) {
+                if( arg.StartsWith( "@" ) ) {
+                    Rank rank = RankManager.FindRank( arg.Substring( 1 ) );
+                    if( rank == null ) {
+                        player.Message( "Unknown rank: {0}", arg.Substring( 1 ) );
+                        return;
+                    } else {
+                        if( player.Can( Permission.Bring, rank ) ) {
+                            targetRanks.Add( rank );
+                        } else {
+                            player.Message( "&WYou are not allowed to bring players of rank {0}",
+                                            rank.ClassyName );
+                        }
+                        allRanks = false;
+                    }
+                } else if( arg == "*" ) {
+                    allWorlds = true;
+                } else {
+                    World world = WorldManager.FindWorldOrPrintMatches( player, arg );
+                    if( world == null ) return;
+                    targetWorlds.Add( world );
+                }
+            }
+
+            // If no worlds were specified, use player's current world
+            if( !allWorlds && targetWorlds.Count == 0 ) {
+                targetWorlds.Add( player.World );
+            }
+
+            // Apply all the rank and world options
+            HashSet<Player> targetPlayers;
+            if( allRanks && allWorlds ) {
+                targetPlayers = new HashSet<Player>( Server.Players );
+            } else if( allWorlds ) {
+                targetPlayers = new HashSet<Player>();
+                foreach( Rank rank in targetRanks ) {
+                    foreach( Player rankPlayer in Server.Players.Ranked( rank ) ) {
+                        targetPlayers.Add( rankPlayer );
+                    }
+                }
+            } else if( allRanks ) {
+                targetPlayers = new HashSet<Player>();
+                foreach( World world in targetWorlds ) {
+                    foreach( Player worldPlayer in world.Players ) {
+                        targetPlayers.Add( worldPlayer );
+                    }
+                }
+            } else {
+                targetPlayers = new HashSet<Player>();
+                foreach( Rank rank in targetRanks ) {
+                    foreach( World world in targetWorlds ) {
+                        foreach( Player rankWorldPlayer in world.Players.Ranked( rank ) ) {
+                            targetPlayers.Add( rankWorldPlayer );
+                        }
+                    }
+                }
+            }
+
+            Rank bringLimit = player.Info.Rank.GetLimit( Permission.Bring );
+
+            // Remove the player him/herself
+            targetPlayers.Remove( player );
+
+            int count = 0;
+
+
+            // Actually bring all the players
+            foreach( Player targetPlayer in targetPlayers.CanBeSeen( player )
+                                                         .RankedAtMost( bringLimit ) ) {
+                if( targetPlayer.World == player.World ) {
+                    // teleport within the same world
+                    targetPlayer.TeleportTo( player.Position );
+                    targetPlayer.Position = player.Position;
+                    if( targetPlayer.Info.IsFrozen ) {
+                        targetPlayer.Position = player.Position;
+                    }
+
+                } else {
+                    // teleport to a different world
+                    BringPlayerToWorld( player, targetPlayer, player.World, false, true );
+                }
+                count++;
+            }
+
+            // Check if there's anyone to bring
+            if( count == 0 ) {
+                player.Message( "No players to bring!" );
+            } else {
+                player.Message( "Bringing {0} players...", count );
+            }
+        }
+
+
+
+        static void BringPlayerToWorld( [NotNull] Player player, [NotNull] Player target, [NotNull] World world,
+                                        bool overridePermissions, bool usePlayerPosition ) {
+            if( player == null ) throw new ArgumentNullException( "player" );
+            if( target == null ) throw new ArgumentNullException( "target" );
+            if( world == null ) throw new ArgumentNullException( "world" );
+            switch( world.AccessSecurity.CheckDetailed( target.Info ) ) {
+                case SecurityCheckResult.Allowed:
+                case SecurityCheckResult.WhiteListed:
+                    if( world.IsFull ) {
+                        player.Message( "Cannot bring {0}&S because world {1}&S is full.",
+                                        target.ClassyName,
+                                        world.ClassyName );
+                        return;
+                    }
+                    target.StopSpectating();
+                    if( usePlayerPosition ) {
+                        target.JoinWorld( world, WorldChangeReason.Bring, player.Position );
+                    } else {
+                        target.JoinWorld( world, WorldChangeReason.Bring );
+                    }
+                    break;
+
+                case SecurityCheckResult.BlackListed:
+                    player.Message( "Cannot bring {0}&S because he/she is blacklisted on world {1}",
+                                    target.ClassyName,
+                                    world.ClassyName );
+                    break;
+
+                case SecurityCheckResult.RankTooLow:
+                    if( overridePermissions ) {
+                        target.StopSpectating();
+                        if( usePlayerPosition ) {
+                            target.JoinWorld( world, WorldChangeReason.Bring, player.Position );
+                        } else {
+                            target.JoinWorld( world, WorldChangeReason.Bring );
+                        }
+                    } else {
+                        player.Message( "Cannot bring {0}&S because world {1}&S requires {2}+&S to join.",
+                                        target.ClassyName,
+                                        world.ClassyName,
+                                        world.AccessSecurity.MinRank.ClassyName );
+                    }
+                    break;
+                // TODO: case PermissionType.RankTooHigh:
+            }
+        }
+
+        #endregion
+
+
+        #region Patrol & SpecPatrol
+
+        static readonly CommandDescriptor CdPatrol = new CommandDescriptor {
+            Name = "Patrol",
+            Aliases = new[] { "pat" },
+            Category = CommandCategory.Moderation,
+            Permissions = new[] { Permission.Patrol },
+            Help = "Teleports you to the next player in need of checking.",
+            Handler = PatrolHandler
+        };
+
+        static void PatrolHandler( Player player, Command cmd ) {
+            World playerWorld = player.World;
+            if( playerWorld == null ) PlayerOpException.ThrowNoWorld( player );
+
+            Player target = playerWorld.GetNextPatrolTarget( player );
+            if( target == null ) {
+                player.Message( "Patrol: No one to patrol in this world." );
+                return;
+            }
+
+            player.TeleportTo( target.Position );
+            player.Message( "Patrol: Teleporting to {0}", target.ClassyName );
+        }
+
+
+        static readonly CommandDescriptor CdSpecPatrol = new CommandDescriptor {
+            Name = "SpecPatrol",
+            Aliases = new[] { "spat" },
+            Category = CommandCategory.Moderation,
+            Permissions = new[] { Permission.Patrol, Permission.Spectate },
+            Help = "Teleports you to the next player in need of checking.",
+            Handler = SpecPatrolHandler
+        };
+
+        static void SpecPatrolHandler( Player player, Command cmd ) {
+            World playerWorld = player.World;
+            if( playerWorld == null ) PlayerOpException.ThrowNoWorld( player );
+
+            Player target = playerWorld.GetNextPatrolTarget( player,
+                                                             p => player.Can( Permission.Spectate, p.Info.Rank ),
+                                                             true );
+            if( target == null ) {
+                player.Message( "Patrol: No one to spec-patrol in this world." );
+                return;
+            }
+
+            target.LastPatrolTime = DateTime.UtcNow;
+            player.Spectate( target );
+        }
+
+        #endregion
+
+
+        #region Mute / Unmute
+
+        static readonly TimeSpan MaxMuteDuration = TimeSpan.FromDays( 700 ); // 100w0d
+
+        static readonly CommandDescriptor CdMute = new CommandDescriptor {
+            Name = "Mute",
+            Category = CommandCategory.Moderation | CommandCategory.Chat,
+            IsConsoleSafe = true,
+            Permissions = new[] { Permission.Mute },
+            Help = "&SMutes a player for a specified length of time.",
+            Usage = "/Mute PlayerName Duration",
+            Handler = MuteHandler
+        };
+
+        static void MuteHandler( Player player, Command cmd ) {
+            string targetName = cmd.Next();
+            string timeString = cmd.Next();
             TimeSpan duration;
-            if (!param.TryParseMiniTimespan(out duration))
-            {
-                CdTimer.PrintUsage(player);
-                return;
-            }
-            if (duration > DateTimeUtil.MaxTimeSpan)
-            {
-                player.MessageMaxTimeSpan();
-                return;
-            }
-            if (duration < ChatTimer.MinDuration)
-            {
-                player.Message("Timer: Must be at least 1 second.");
+
+            // validate command parameters
+            if( String.IsNullOrEmpty( targetName ) || String.IsNullOrEmpty( timeString ) ||
+                !timeString.TryParseMiniTimespan( out duration ) || duration <= TimeSpan.Zero ) {
+                CdMute.PrintUsage( player );
                 return;
             }
 
-            string sayMessage;
-            string message = cmd.NextAll();
-            if (String.IsNullOrEmpty(message))
-            {
-                sayMessage = String.Format("&Y(Timer) {0}&Y started a {1} timer",
-                                            player.ClassyName,
-                                            duration.ToMiniString());
+            // check if given time exceeds maximum (700 days)
+            if( duration > MaxMuteDuration ) {
+                player.Message( "Maximum mute duration is {0}.", MaxMuteDuration.ToMiniString() );
+                duration = MaxMuteDuration;
             }
-            else
-            {
-                sayMessage = String.Format("&Y(Timer) {0}&Y started a {1} timer: {2}",
-                                            player.ClassyName,
-                                            duration.ToMiniString(),
-                                            message);
+
+            // find the target
+            Player target = Server.FindPlayerOrPrintMatches( player, targetName, false, true );
+            if( target == null ) return;
+
+            // actually mute
+            try {
+                target.Info.Mute( player, duration, true, true );
+            } catch( PlayerOpException ex ) {
+                player.Message( ex.MessageColored );
             }
-            Chat.SendSay(player, sayMessage);
-            ChatTimer.Start(duration, message, player.Name);
+        }
+
+
+        static readonly CommandDescriptor CdUnmute = new CommandDescriptor {
+            Name = "Unmute",
+            Category = CommandCategory.Moderation | CommandCategory.Chat,
+            IsConsoleSafe = true,
+            Permissions = new[] { Permission.Mute },
+            Help = "&SUnmutes a player.",
+            Usage = "/Unmute PlayerName",
+            Handler = UnmuteHandler
+        };
+
+        static void UnmuteHandler( Player player, Command cmd ) {
+            string targetName = cmd.Next();
+            if( String.IsNullOrEmpty( targetName ) ) {
+                CdUnmute.PrintUsage( player );
+                return;
+            }
+
+            // find target
+            Player target = Server.FindPlayerOrPrintMatches( player, targetName, false, true );
+            if( target == null ) return;
+
+            try {
+                target.Info.Unmute( player, true, true );
+            } catch( PlayerOpException ex ) {
+                player.Message( ex.MessageColored );
+            }
         }
 
         #endregion
 
-        
-    }
 
+        #region Spectate / Unspectate
+
+        static readonly CommandDescriptor CdSpectate = new CommandDescriptor {
+            Name = "Spectate",
+            Aliases = new[] { "follow", "spec" },
+            Category = CommandCategory.Moderation,
+            Permissions = new[] { Permission.Spectate },
+            Usage = "/Spectate PlayerName",
+            Handler = SpectateHandler
+        };
+
+        static void SpectateHandler( Player player, Command cmd ) {
+            string targetName = cmd.Next();
+            if( targetName == null ) {
+                PlayerInfo lastSpec = player.LastSpectatedPlayer;
+                if( lastSpec != null ) {
+                    Player spec = player.SpectatedPlayer;
+                    if( spec != null ) {
+                        player.Message( "Now spectating {0}", spec.ClassyName );
+                    } else {
+                        player.Message( "Last spectated {0}", lastSpec.ClassyName );
+                    }
+                } else {
+                    CdSpectate.PrintUsage( player );
+                }
+                return;
+            }
+
+            Player target = Server.FindPlayerOrPrintMatches( player, targetName, false, true );
+            if( target == null ) return;
+
+            if( target == player ) {
+                player.Message( "You cannot spectate yourself." );
+                return;
+            }
+
+            if( !player.Can( Permission.Spectate, target.Info.Rank ) ) {
+                player.Message( "You may only spectate players ranked {0}&S or lower.",
+                player.Info.Rank.GetLimit( Permission.Spectate ).ClassyName );
+                player.Message( "{0}&S is ranked {1}",
+                                target.ClassyName, target.Info.Rank.ClassyName );
+                return;
+            }
+
+            if( !player.Spectate( target ) ) {
+                player.Message( "Already spectating {0}", target.ClassyName );
+            }
+        }
+
+
+        static readonly CommandDescriptor CdUnspectate = new CommandDescriptor {
+            Name = "Unspectate",
+            Aliases = new[] { "unfollow", "unspec" },
+            Category = CommandCategory.Moderation,
+            Permissions = new[] { Permission.Spectate },
+            NotRepeatable = true,
+            Handler = UnspectateHandler
+        };
+
+        static void UnspectateHandler( Player player, Command cmd ) {
+            if( !player.StopSpectating() ) {
+                player.Message( "You are not currently spectating anyone." );
+            }
+        }
+
+        #endregion
+
+
+        // freeze target if player is allowed to do so
+        static void FreezeIfAllowed( Player player, PlayerInfo targetInfo ) {
+            if( targetInfo.IsOnline && !targetInfo.IsFrozen && player.Can( Permission.Freeze, targetInfo.Rank ) ) {
+                try {
+                    targetInfo.Freeze( player, true, true );
+                    player.Message( "Player {0}&S has been frozen while you retry.", targetInfo.ClassyName );
+                } catch( PlayerOpException ) { }
+            }
+        }
+
+
+        // warn player if others are still online from target's IP
+        static void WarnIfOtherPlayersOnIP( Player player, PlayerInfo targetInfo, Player except ) {
+            Player[] otherPlayers = Server.Players.FromIP( targetInfo.LastIP )
+                                                  .Except( except )
+                                                  .ToArray();
+            if( otherPlayers.Length > 0 ) {
+                player.Message( "&WWarning: Other player(s) share IP with {0}&W: {1}",
+                                targetInfo.ClassyName,
+                                otherPlayers.JoinToClassyString() );
+            }
+        }
+    }
 }
-                     
