@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  Copyright 2009-2012 Matvei Stefarov <me@matvei.org>
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -61,7 +61,7 @@ namespace fCraft.ServerCLI {
                 }
 
                 if( Server.StartServer() ) {
-                    Console.WriteLine( "** Running LegendCraft version {0}. **", Updater.CurrentRelease.VersionString );
+                    Console.WriteLine( "** Running LegendCraft version 1.8.1 **", Updater.CurrentRelease.VersionString );
                     Console.WriteLine( "** Server is now ready. Type /Shutdown to exit safely. **" );
 
                     while( !Server.IsShuttingDown ) {
@@ -92,7 +92,7 @@ namespace fCraft.ServerCLI {
 
 
         static void ReportFailure( ShutdownReason reason ) {
-            Console.Title = String.Format( "LegendCraft {0} {1}", Updater.CurrentRelease.VersionString, reason );
+            Console.Title = String.Format( "LegendCraft 1.8.1 {1}", Updater.CurrentRelease.VersionString, reason );
             if( useColor ) Console.ForegroundColor = ConsoleColor.Red;
             Console.Error.WriteLine( "** {0} **", reason );
             if( useColor ) Console.ResetColor();
