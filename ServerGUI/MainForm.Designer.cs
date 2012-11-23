@@ -1,4 +1,4 @@
-﻿namespace fCraft.ServerGUI {
+namespace fCraft.ServerGUI {
     partial class MainForm {
         /// <summary>
         /// Required designer variable.
@@ -31,8 +31,8 @@
             this.playerListLabel = new System.Windows.Forms.Label();
             this.bPlay = new System.Windows.Forms.Button();
             this.SizeBox = new System.Windows.Forms.ComboBox();
-            this.ThemeBox = new System.Windows.Forms.ComboBox();
             this.console = new fCraft.ServerGUI.ConsoleBox();
+            this.ThemeBox = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // logBox
@@ -61,10 +61,11 @@
             // URLLabel
             // 
             this.URLLabel.AutoSize = true;
-            this.URLLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.URLLabel.Font = new System.Drawing.Font("Lucida Sans", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.URLLabel.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.URLLabel.Location = new System.Drawing.Point(9, 15);
             this.URLLabel.Name = "URLLabel";
-            this.URLLabel.Size = new System.Drawing.Size(77, 13);
+            this.URLLabel.Size = new System.Drawing.Size(73, 12);
             this.URLLabel.TabIndex = 5;
             this.URLLabel.Text = "Server URL:";
             // 
@@ -84,10 +85,11 @@
             // 
             this.playerListLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.playerListLabel.AutoSize = true;
-            this.playerListLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.playerListLabel.Font = new System.Drawing.Font("Lucida Sans", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.playerListLabel.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.playerListLabel.Location = new System.Drawing.Point(628, 42);
             this.playerListLabel.Name = "playerListLabel";
-            this.playerListLabel.Size = new System.Drawing.Size(62, 13);
+            this.playerListLabel.Size = new System.Drawing.Size(65, 12);
             this.playerListLabel.TabIndex = 6;
             this.playerListLabel.Text = "Player list";
             // 
@@ -117,12 +119,23 @@
             this.SizeBox.Text = "Size";
             this.SizeBox.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
+            // console
+            // 
+            this.console.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.console.Enabled = false;
+            this.console.Location = new System.Drawing.Point(13, 433);
+            this.console.Name = "console";
+            this.console.Size = new System.Drawing.Size(759, 20);
+            this.console.TabIndex = 0;
+            this.console.Text = "Server Loading...";
+            // 
             // ThemeBox
             // 
             this.ThemeBox.FormattingEnabled = true;
             this.ThemeBox.Items.AddRange(new object[] {
-            "New 800Craft",
-            "Old 800Craft",
+            "Default LC",
+            "Alternate LC",
             "Pink",
             "Yellow",
             "Green",
@@ -134,17 +147,6 @@
             this.ThemeBox.TabIndex = 9;
             this.ThemeBox.Text = "Theme";
             this.ThemeBox.SelectedIndexChanged += new System.EventHandler(this.ThemeBox_SelectedIndexChanged);
-            // 
-            // console
-            // 
-            this.console.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.console.Enabled = false;
-            this.console.Location = new System.Drawing.Point(13, 433);
-            this.console.Name = "console";
-            this.console.Size = new System.Drawing.Size(759, 20);
-            this.console.TabIndex = 0;
-            this.console.Text = "Server Loading...";
             // 
             // MainForm
             // 
