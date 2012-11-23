@@ -72,7 +72,7 @@ namespace fCraft {
             CommandManager.RegisterCommand( CdPunch );
             CommandManager.RegisterCommand( CdBanAll );
             CommandManager.RegisterCommand( CdEconomy );
-            CommandManager.RegisterCommand(CdPay);
+            CommandManager.RegisterCommand( CdPay );
 
         }
         #region LegendCraft
