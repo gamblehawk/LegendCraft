@@ -6,4 +6,5 @@ ToDo:
 -$help (possibly /$commands)
 -branch /pay from /econ pay  (done!)
 -(possible) /lebot reqs
+-silent kick
 -seduce women, obtain currency 
