@@ -418,7 +418,7 @@ THE SOFTWARE.*/
                 }
                 if (target == player)
                 {
-                    Server.Message("{1} killed itself in confusion!", player.ClassyName);
+                    Server.Message("{0} killed itself in confusion!", player.ClassyName);
                     return;
                 }
 
