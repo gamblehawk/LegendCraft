@@ -1,7 +1,9 @@
 ToDo:
 -add irc visibility to lebot  (done!)
 -remove theme option from serverGUI (New themes created instead)
--allow editing of announcements and possibly rules and greeting ig
+-allow editing of announcements and possibly rules and greeting ig (cancelled)
+-add website into configGUI
+-add shortcuts in serverGUI
 -make a polar2d build cd
 -$help (possibly /$commands)
 -branch /pay from /econ pay  (done!)
