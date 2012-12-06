@@ -40,16 +40,21 @@ namespace fCraft {
             rawMessage = rawMessage.Replace("$mad", "You mad, bro?");
             rawMessage = rawMessage.Replace("$welcome", "Welcome to " +ConfigKey.ServerName.GetString());
             rawMessage = rawMessage.Replace("$clap", "A round of applause might be appropriate, *claps*");
+            rawMessage = rawMessage.Replace("$website", reasonWebsite[0]);
+            rawMessage = rawMessage.Replace("$ws", reasonWebsite[0]);
             
             if (player.Can(Permission.UseColorCodes))
             {
                 rawMessage = rawMessage.Replace("$lime", "&a");     //alternate color codes for ease if you can't remember the codes
                 rawMessage = rawMessage.Replace("$aqua", "&b");
+                rawMessage = rawMessage.Replace("$cyan", "&b");
                 rawMessage = rawMessage.Replace("$red", "&c");
                 rawMessage = rawMessage.Replace("$magenta", "&d");
+                rawMessage = rawMessage.Replace("$pink", "&d");
                 rawMessage = rawMessage.Replace("$yellow", "&e");
                 rawMessage = rawMessage.Replace("$white", "&f");
                 rawMessage = rawMessage.Replace("$navy", "&1");
+                rawMessage = rawMessage.Replace("$darkblue", "&1");
                 rawMessage = rawMessage.Replace("$green", "&2");
                 rawMessage = rawMessage.Replace("$teal", "&3");
                 rawMessage = rawMessage.Replace("$maroon", "&4");
