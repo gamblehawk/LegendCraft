@@ -72,8 +72,68 @@ namespace fCraft {
             CommandManager.RegisterCommand( CdPunch );
             CommandManager.RegisterCommand( CdBanAll );
             CommandManager.RegisterCommand( CdEconomy );
+            CommandManager.RegisterCommand( CdBanGrief );
 
         }
+        
+        #region IntriCraft
+
+        static CommandDescriptor CdBanGrief = new CommandDescriptor
+        {
+            Name = "BanGrief",
+            Category = CommandCategory.Moderation,
+            Aliases = new[] { "Bg" },
+            IsConsoleSafe = true,
+            Permissions = new[] { Permission.Ban },
+            NotRepeatable = true,
+            Usage = "/BanGrief Playername",
+            Help = "Bans the player with the reason \"Grief, appeal at <website>\"",
+            Handler = BanGriefHandler
+        };
+
+        static void BanGriefHandler(Player player, Command cmd)
+        {
+            string targetName = cmd.Next();
+            if (targetName == null)
+            {
+                player.Message("&SUsage: /BanGrief Playername");
+                return;
+            }
+            if (cmd.HasNext)
+            {
+                player.Message("&CYou don't need to specify a reason; that's the whole point of this command.");
+                return;
+            }
+
+            // Find the target
+            PlayerInfo target = PlayerDB.FindPlayerInfoOrPrintMatches(player, targetName);
+            if (target == null) return;
+
+            // Getting the reason, using websiteurl.txt as the website to appeal at.
+            // It's not the most elegant solution, but it works.
+            string reason = "Grief. Appeal at our website";
+            try
+            {
+                FileInfo websiteURLFile = new FileInfo("websiteurl.txt");
+                string[] reasonWebsite = File.ReadAllLines(websiteURLFile.FullName);
+                reason = "Grief. Appeal at " + reasonWebsite[0];
+            }
+            catch (Exception ex)
+            { 
+                Logger.LogToConsole("Could not read from websiteurl.txt. Using default BanGrief message"); }
+
+            // Actually ban the target
+            try
+            {
+                target.Ban(player, reason, true, true);
+            }
+            catch (PlayerOpException ex)
+            { player.Message(ex.MessageColored); }
+        }
+
+        #endregion
+        
+        
         #region LegendCraft
         /* Copyright (c) <2012> <LeChosenOne, DingusBungus>
    Permission is hereby granted, free of charge, to any person obtaining a copy
