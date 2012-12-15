@@ -1,4 +1,5 @@
 For Downloads, visit: http://risingembers.enjin.com/forum/m/9404373/viewforum/1970847
+
 Thank you for downloading LegendCraft, a custom Minecraft server based on fCraft and 800craft.
 
 Special thanks to fragmer, for creating fCraft! Special thanks to Jonty800, GlennMR and LaoTszy for creating 800Craft!
