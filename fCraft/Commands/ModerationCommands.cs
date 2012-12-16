@@ -139,13 +139,14 @@ THE SOFTWARE.*/
                 reason = "Grief. Appeal at " + reasonWebsite[0];
             }
             catch (Exception ex)
-            { 
-                Logger.LogToConsole("Could not read from websiteurl.txt. Using default BanGrief message"); }
+            { Logger.LogToConsole("Could not read from websiteurl.txt. Using default BanGrief message"); }
 
             // Actually ban the target
             try
             {
+                Player targetPlayer = target.PlayerObject;
                 target.Ban(player, reason, true, true);
+                WarnIfOtherPlayersOnIP( player, target, targetPlayer );
             }
             catch (PlayerOpException ex)
             { player.Message(ex.MessageColored); }
