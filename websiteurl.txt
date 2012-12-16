@@ -1,1 +1,1 @@
-Just put the name of your website here and /bangrief and $website ($ws) will work. Delete this message.
+\* Remove this all this text and replace with your website url. The url will appear in $website, $ws, and /bangrief */
