@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using fCraft.Events;
 using JetBrains.Annotations;
+using System.IO;
 
 namespace fCraft {
     /// <summary>
