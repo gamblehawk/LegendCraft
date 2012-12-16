@@ -21,6 +21,8 @@ namespace fCraft {
             if( player == null ) throw new ArgumentNullException( "player" );
             if( rawMessage == null ) throw new ArgumentNullException( "rawMessage" );
             string OriginalMessage = rawMessage;
+            FileInfo websiteURLFile = new FileInfo("websiteurl.txt");
+                string[] reasonWebsite = File.ReadAllLines(websiteURLFile.FullName);
             if (Server.Moderation && !Server.VoicedPlayers.Contains(player) && player.World != null)
             {
                 player.Message("&WError: Server Moderation is activated. Message failed to send");
