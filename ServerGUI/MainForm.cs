@@ -7,8 +7,10 @@ using System.Windows.Forms;
 using fCraft.Events;
 using fCraft.GUI;
 using System.Threading;
+using fCraft.ServerGUI;
 
-namespace fCraft.ServerGUI {
+namespace fCraft.ServerGUI
+{
 
     public sealed partial class MainForm : Form
     {
@@ -25,6 +27,7 @@ namespace fCraft.ServerGUI {
             MenuItem[] menuItems = new MenuItem[] { new MenuItem("Copy", new EventHandler(CopyMenuOnClickHandler)) };
             logBox.ContextMenu = new ContextMenu(menuItems);
             logBox.ContextMenu.Popup += new EventHandler(CopyMenuPopupHandler);
+            playerList.MouseDoubleClick += new MouseEventHandler(playerList_MouseDoubleClick);
         }
 
         #region Startup
@@ -57,7 +60,7 @@ namespace fCraft.ServerGUI {
 
                 BeginInvoke((Action)OnInitSuccess);
 
-                
+
 
                 // set process priority
                 if (!ConfigKey.ProcessPriority.IsBlank())
@@ -212,7 +215,7 @@ namespace fCraft.ServerGUI {
                             logBox.SelectionColor = System.Drawing.Color.Teal;
                             break;
                         case LogType.IRC:
-                           if (ThemeBox.SelectedItem == null)
+                            if (ThemeBox.SelectedItem == null)
                             {
                                 logBox.SelectionColor = System.Drawing.Color.Navy;
                             }
@@ -227,7 +230,7 @@ namespace fCraft.ServerGUI {
                                         logBox.SelectionColor = System.Drawing.Color.Navy;
                                         break;
                                 }
-                            } 
+                            }
                             break;
                         case LogType.ChangedWorld:
                             logBox.SelectionColor = System.Drawing.Color.Orange;
@@ -376,7 +379,6 @@ namespace fCraft.ServerGUI {
             }
             catch (InvalidOperationException) { }
         }
-
 
         private void console_Enter()
         {
@@ -636,5 +638,31 @@ namespace fCraft.ServerGUI {
                 isGrey = true;
             }
         }
+        #region PlayerViewer
+      
+        private void playerList_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            try
+            {
+                string s = (string)playerList.Items[playerList.SelectedIndex];
+                s = s.Substring(s.IndexOf('-'),
+                    s.Length - s.IndexOf('-'))
+                    .Replace("-", "")
+                    .Replace(" ", "")
+                    .Trim();
+                PlayerInfo player = PlayerDB.FindPlayerInfoExact(s);
+                if (player == null) return;
+                var v = new PlayerViewer(player);
+                v.Show();
+            }
+            catch { } //do nothing at all
+        }
+        
+        
+        #endregion
+        
+
+
+        
     }
 }
