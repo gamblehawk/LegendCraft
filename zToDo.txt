@@ -2,11 +2,11 @@ ToDo:
 -add irc visibility to lebot  (done!)
 -remove theme option from serverGUI (New themes created instead)
 -allow editing of announcements and possibly rules and greeting ig (cancelled)
--add website into configGUI
--add shortcuts in serverGUI
--make a polar2d build cd
+-add website into configGUI (in progress)
+-add shortcuts in serverGUI (done!)
+-make a polar2d build cd (in progress)
 -$help (possibly /$commands)
 -branch /pay from /econ pay  (done!)
--(possible) /lebot reqs
--silent kick
+-(possible) /lebot reqs (in progress)
+-silent kick (done!)
 -seduce women, obtain currency 
