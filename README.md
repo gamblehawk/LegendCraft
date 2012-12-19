@@ -18,6 +18,7 @@ Probably out of boredom, Eeyle eventually joined the team.
 ##LegendCraft-Installation
  For Windows, LegendCraft requires Microsoft .Net Framework 4.0. Many computers come already installed with it.
 If you do not have this installed, please visit http://tinyurl.com/7vrsjj3.
+
 For Linux, Mac OSX, and Unix distributions, please download mono 2.10. 
 Download can be found at http://www.mono-project.org/. To be able to run GUIs, please make sure that you have GDI+ library (libgdiplus). Also, make sure to give read/write access to the LegendCraft directory. To run ".exe" files with Mono, use the following syntax: Mono 2.6.4: "mono SomeFile.exe" Mono 2.8+: "mono --gc=sgen SomeFile.exe" If you're intending to run a public server that appears on minecraft.net's server list, you need to import https certificates to tell mono you trust them, this can be done by running mozroots --import --ask-remove as the LegendCraft user on your system.
 
