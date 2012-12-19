@@ -9,7 +9,7 @@ while maintaining an impressive performance with a large array of features and c
  LegendCraft was founded in the spring of 2012,
 where it started out as a nameless ‘800Craft custom edition’ software. 
 Eventually, LeChosenOne, the sole developer at the time gave it it’s name,
-‘LegendCraft’. After the first release, it was quickly found out by a few server,
+‘LegendCraft’. After the first release, it was quickly found out by a few servers,
 most notably by ‘Rising Embers.’ DingusBungus, the host of Rising Embers
 wanted to help out with the LegendCraft project, and has since joined the development team.
 LegendCraft spread to a few more servers until Eeyle learned about the software.
