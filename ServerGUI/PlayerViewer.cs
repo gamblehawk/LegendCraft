@@ -332,10 +332,20 @@ namespace fCraft.ServerGUI
             }
         }
 
-        #region PlayerViewerbuttons
+     #region PlayerViewerbuttons
         private void PMButton_Click(object sender, EventArgs e)
         {
-            Chat.SendPM(Player.Console, player.PlayerObject, MTextBox.Text);
+            if (MTextBox.Text.Trim() != "")
+            {
+                Chat.SendPM(Player.Console, player.PlayerObject, MTextBox.Text);
+                MTextBox.Text = "";
+                return;
+            }
+            else
+            {
+                MessageBox.Show("Please insert text to PM towards a player!");
+                return;
+            }
         }
         /*private void KickButton_Click(object sender, EventArgs e)
         {
@@ -345,6 +355,7 @@ namespace fCraft.ServerGUI
         {
             player.Ban(Player.Console, MTextBox.Text, true, true);
         } */
+    
         #endregion
 
         #region design
