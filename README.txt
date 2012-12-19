@@ -1,4 +1,6 @@
-﻿Thank you for downloading LegendCraft, a custom Minecraft server based on fCraft and 800craft.
+For Downloads, visit: http://risingembers.enjin.com/forum/m/9404373/viewforum/1970847
+
+Thank you for downloading LegendCraft, a custom Minecraft server based on fCraft and 800craft.
 
 Special thanks to fragmer, for creating fCraft! Special thanks to Jonty800, GlennMR and LaoTszy for creating 800Craft!
 LegendCraft is a modified version of 800Craft. LegendCraft configGUIs and serverGUIs were moddeled after 800Craft's.
@@ -22,6 +24,10 @@ that it has read/write permissions in the LegendCraft directory.
 To run ".exe" files with Mono, use the following syntax:
 Mono 2.6.4: "mono SomeFile.exe"
 Mono 2.8+:  "mono --gc=sgen SomeFile.exe"
+
+If you're intending to run a public server that appears on minecraft.net's server list,     
+you need to import https certificates to tell mono you trust them, this can be done by 
+running mozroots --import --ask-remove as the 800Craft user on your system.
 
 === Initial Setup =============================================================
 
@@ -48,7 +54,7 @@ Server does not show up on minecraft.net list:
     Make sure that you added firewall exception for 800Craft (if applicable),
     and forwarded the port on your router. If you are connecting from same
     computer that the server is working on, try connecting to:
-    http://www.minecraft.net/play.jsp?ip=127.0.0.1&port=____
+    https://minecraft.net/classic/play?ip=127.0.0.1&port=____
         (fill in the blank with your server's port number)
 
 "Could not verify player name":
@@ -81,7 +87,7 @@ Other players cannot connect from the same LAN/network as me:
             type "ipconfig". The address you need is labeled "IPv4 Address"
             under "Local Area Connection".
         * In Unix/Linux, use "ifconfig" utility. 
-   3. Connect to http://www.minecraft.net/play.jsp?ip=____&port=____
+   3. Connect to https://minecraft.net/classic/play?ip=____&port=____
         (fill in the blanks with your server's IP address and port number)
 
 
@@ -152,7 +158,7 @@ Type "/help" in-game or in server console to get started. Type "/commands" for
 a list of available commands. 
 
 To request features, report bugs, or receive support, please visit:
-    http://dingusserver.forumotion.com/f9-legendcraft
+    risingembers.us
 
 
 
@@ -160,6 +166,7 @@ To request features, report bugs, or receive support, please visit:
 LegendCraft code and binaries are covered by the MIT license.
 
 LegendCraft license:
+
 -------------------------------------------------------------------------------
 Copyright (c) <2012> <LeChosenOne, DingusBingus>
 
@@ -171,7 +178,7 @@ copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+all copies or substantial portions of the software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -180,13 +187,15 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
 --------------------------------------------------------------------------------
 
 The 800Craft HeartBeatSaver is Copyright (C) <2011, 2012> Jon Baker 
 and is ONLY to be distributed with copies of 800Craft.
-All LegendCraft files do NOT contain a heartbeatsaver. If you did recieve a heartbeat saver, please contact LeChosenOne immediately.
+The LegendCraft HeartBeatSaver is sorta not really yet kinda the same as 800Craft's.
 
 800Craft's license:
+
 -------------------------------------------------------------------------------
 Copyright (C) <2012> <Jon Baker, Glenn Mari�n and Lao Tszy>
 
@@ -218,7 +227,7 @@ copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+all copies or substantial portions of the software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -227,6 +236,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
 -------------------------------------------------------------------------------
 
 If you create 800Craft plugins that do not include any substantial portions of
@@ -242,9 +252,8 @@ or any other files from Minecraft... neither does 800Craft or LegendCraft.
 
 === Credits ===================================================================
 
-LegendCraft was developed by LeChosenOne, and DingusBungus
-   With code contribution by xxRaWatbBallXX.
-
+LegendCraft was developed by LeChosenOne, DingusBungus, and Eeyle
+  
 Thanks to 800Craft code contributers:
     Rebelliousdude, boblol0909, WaterGod469 and Maicke98 for trying. 
 
@@ -269,7 +278,7 @@ Thanks to Minecraft servers that helped test and improve fCraft:
     D3M0Ns FreeBuild, ~The Best Freebuild 24/7~, 800Craft Freebuild Official
 
 Thanks to the bug Testers and helpers for LegendCraft:
-    Ascending Blackout Server Community, Pure2k12, ThunderCraft Server Community, and Dingus and Jake's Server
+    Ascending Blackout Server Community, Pure2k12, ThunderCraft Server Community, and Rising Ember Community
 
 Special Thanks to Pure2K12 for catching numerous bugs and for inspiration!
 Special Thanks to Jonty800 for doing stuff!
