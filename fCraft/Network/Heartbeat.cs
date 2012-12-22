@@ -1,4 +1,4 @@
-﻿// Copyright 2009-2012 Matvei Stefarov <me@matvei.org>
+// Copyright 2009-2012 Matvei Stefarov <me@matvei.org>
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -73,7 +73,7 @@ namespace fCraft {
                 };
                 const string tempFile = Paths.HeartbeatDataFileName + ".tmp";
                 File.WriteAllLines( tempFile, data, Encoding.ASCII );
-                Paths.MoveOrReplace( tempFile, Paths.HeartbeatDataFileName );
+                Paths.MoveOrReplaceFile( tempFile, Paths.HeartbeatDataFileName );
             }
         }
 
@@ -119,15 +119,27 @@ namespace fCraft {
         public static string HbData;
         public static void HbSave()
         {
-            const string SaverFile = "heartbeatsaver.txt";
+            const string SaverFile = "heartbeatdata.txt";
             if (File.Exists(SaverFile))
             {
                 File.Delete(SaverFile);
             }
-            HbData = "port=" + Server.Port.ToString() + "&max=" + ConfigKey.MaxPlayers.GetString() + "&name=" +
-                Uri.EscapeDataString(ConfigKey.ServerName.GetString()) +
-                "&public=True" + "&salt=" + Salt + "&users=" + Server.CountPlayers(false).ToString();
-            File.WriteAllText(SaverFile, HbData, Encoding.ASCII);
+            string[] data = new[] {
+                    Salt,
+                    Server.InternalIP.ToString(),
+                    Server.Port.ToString(),
+                    Server.CountPlayers( false ).ToString(),
+                    ConfigKey.MaxPlayers.GetString(),
+                    ConfigKey.ServerName.GetString(),
+                    ConfigKey.IsPublic.GetString()
+                    };
+                
+                //"port=" + Server.Port.ToString() + "&max=" + ConfigKey.MaxPlayers.GetString() + "&name=" +
+                //Uri.EscapeDataString(ConfigKey.ServerName.GetString()) +
+                //"&public=True" + "&salt=" + Salt + "&users=" + Server.CountPlayers(false).ToString();
+            const string tempFile = Paths.HeartbeatDataFileName + ".tmp";
+            File.WriteAllLines(tempFile, data, Encoding.ASCII);
+            Paths.MoveOrReplaceFile(tempFile, Paths.HeartbeatDataFileName);
         }
 
 
