@@ -1,7 +1,13 @@
+#LegendCraft
+
+![LegendCraft Logo](http://i.imgur.com/lCm06.png)
+
+Open-Sourced Custom MineCraft-Classic Server Software
+
 ##LegendCraft-About
- LegendCraft (risingembers.us) is an open-sourced software for minecraft classic servers. 
-LegendCraft is forked from 800Craft (800Craft.net), which was developed by Jonty800, GlennMR, and Lao Tszy. 
-The 800Craft project was a software that was forked from Fragmer’s fCraft (fCraft.net). 
+ [LegendCraft](risingembers.us) is an open-sourced software for minecraft classic servers. 
+LegendCraft is forked from [800Craft](800Craft.net), which was developed by Jonty800, GlennMR, and Lao Tszy. 
+The 800Craft project was a software that was forked from Fragmer’s [fCraft](fCraft.net). 
 LegendCraft is designed to withstand a large server load,
 while maintaining an impressive performance with a large array of features and customization.
 
