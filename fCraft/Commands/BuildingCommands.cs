@@ -101,6 +101,7 @@ namespace fCraft {
             CommandManager.RegisterCommand(CdUndoAll);
             //CommandManager.RegisterCommand(CdMessageBlock);
             //CommandManager.RegisterCommand(CdBanX2);
+            CommandManager.RegisterCommand(CdDoubleStair);
         }
         #region LegendCraft
         /* Copyright (c) <2012> <LeChosenOne, DingusBungus, Eeyle>
@@ -121,7 +122,32 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.*/
+        
+         static readonly CommandDescriptor CdDoubleStair = new CommandDescriptor //a copy and paste of /lava
+        {
+            Name = "DoubleStair",
+            Aliases = new[] { "ds" },
+            Category = CommandCategory.Building,
+            Permissions = new[] { Permission.PlaceGrass },
+            Help = "Toggles the DoubleStair placement mode. When enabled, any Stair block you place is replaced with DoubleStair.",
+            Handler = DoubleStairHandler
+        };
 
+        static void DoubleStairHandler(Player player, Command cmd)
+        {
+            if (player.GetBind(Block.Stair) == Block.DoubleStair)
+            {
+                player.ResetBind(Block.Stair);
+                player.Message("DoubleStair: OFF");
+            }
+
+            else
+            {
+                player.Bind(Block.Stair, Block.DoubleStair);
+                player.Message("DoubleStair: ON. Stair blocks are replaced with DoubleStairs.");
+            }
+        }
+        
         static readonly CommandDescriptor CdMessageBlock = new CommandDescriptor
         {
             Name = "MessageBlock",
