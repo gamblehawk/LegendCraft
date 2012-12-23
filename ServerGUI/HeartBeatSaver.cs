@@ -67,6 +67,7 @@ namespace fCraft.HeartbeatSaver
             try
             {
                 string[] rawData = File.ReadAllLines(heartbeatDataFileName, Encoding.ASCII);
+                //take the data from heartbeatdata.txt that was created from Network/HeartBeat.cs, make sure the orders match up on each :3
                 HeartbeatData newData = new HeartbeatData
                 {
                     Salt = rawData[0],
@@ -85,19 +86,19 @@ namespace fCraft.HeartbeatSaver
             {
                 if (ex is UnauthorizedAccessException || ex is IOException)
                 {
-                    Console.Error.WriteLine("{0} > Error reading {1}: {2} {3}",
+                    Console.Error.WriteLine("{0}: UnauthorizedAccessException - Error reading {1}: {2} {3}",
                                              Timestamp(),
                                              heartbeatDataFileName, ex.GetType().Name, ex.Message);
                 }
                 else if (ex is FormatException || ex is ArgumentException)
                 {
-                    Console.Error.WriteLine("{0} > Cannot parse one of the data fields of {1}: {2} {3}",
+                    Console.Error.WriteLine("{0}: FormatException - Cannot parse one of the data fields of {1}: {2} {3}",
                                              Timestamp(),
                                              heartbeatDataFileName, ex.GetType().Name, ex.Message);
                 }
                 else
                 {
-                    Console.Error.WriteLine("{0} > Unexpected error: {1} {2}",
+                    Console.Error.WriteLine("{0}: Unexpected error: {1} {2}",
                                              Timestamp(),
                                              ex.GetType().Name, ex.Message);
                 }
@@ -129,6 +130,7 @@ namespace fCraft.HeartbeatSaver
                                               ProtocolVersion,
                                               Uri.EscapeDataString(freshData.Salt),
                                               Uri.EscapeDataString(freshData.ServerName));
+                    //start the heartbeat loop here
                     CreateRequest(ub.Uri);
                     Thread.Sleep(Delay);
 
@@ -137,7 +139,7 @@ namespace fCraft.HeartbeatSaver
                 {
                     if (ex is WebException)
                     {
-                        Console.Error.WriteLine("{0}: Minecraft.net probably down ({1})", Timestamp(), ex.Message);
+                        Console.Error.WriteLine("{0}: Minecraft.net is probably down :( ({1})", Timestamp(), ex.Message);
                     }
                     else
                     {
@@ -151,6 +153,7 @@ namespace fCraft.HeartbeatSaver
         public static int count = 1;
         // Creates an HTTP GET request to the given Uri. Optionally saves the response, to UrlFileName.
         // Throws all kinds of exceptions on failure
+        //sends the actual heartbeat
         static void CreateRequest(Uri uri)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
@@ -167,12 +170,24 @@ namespace fCraft.HeartbeatSaver
                 {
                     string responseText = responseReader.ReadToEnd();
                     File.WriteAllText(UrlFileName, responseText.Trim(), Encoding.ASCII);
-                    Console.WriteLine("{0}: Sending HeartBeat... Count {1}", Timestamp(), count );
+                    if (count == 69)
+                    {
+                        Console.WriteLine("{0}: Sending HeartBeat... Count 69...Lol, I said 69...hehe", Timestamp());
+                    }
+                    else if (count == 9001)
+                    {
+                        Console.WriteLine("{0}: Sending HeartBeat... Count 9001...ITS OVAR 9000!", Timestamp());
+                    }
+                    else
+                    {
+                        Console.WriteLine("{0}: Sending HeartBeat... Count {1}", Timestamp(), count);
+                    }
                     Console.WriteLine("");
                     count++;
                 }
             }
         }
+        //end heartbeat loop
 
 
         // Timestamp, used for logging
