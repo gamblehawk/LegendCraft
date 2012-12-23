@@ -103,6 +103,7 @@ namespace fCraft {
             //CommandManager.RegisterCommand(CdBanX2);
             CommandManager.RegisterCommand(CdDoubleStair);
             CommandManager.RegisterCommand(CdAbortAll);
+            CommandManager.RegisterCommand(Cdzz);
         }
         #region LegendCraft
         /* Copyright (c) <2012> <LeChosenOne, DingusBungus, Eeyle>
@@ -123,6 +124,32 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.*/
+        
+        static readonly CommandDescriptor Cdzz = new CommandDescriptor
+        {
+            Name = "zz",
+            Aliases = new[] { "staticz", "cc" },
+            Permissions = new[] { Permission.Draw },
+            Category = CommandCategory.Building,
+            Help = "Allows you to use cuboid subsequently.",
+            Handler = zzHandler
+        };
+
+        static void zzHandler(Player player, Command cmd)
+        {
+            bool zz = false;
+            if (zz == false)
+            {
+                StaticHandler(player, new Command("/static"));
+                CuboidHandler(player, new Command("/cuboid"));
+                zz = true;
+            }
+            else
+            {
+                StaticHandler(player, new Command("/static"));
+                zz = false;
+            }
+        }
         
          static readonly CommandDescriptor CdDoubleStair = new CommandDescriptor //a copy and paste of /lava
         {
