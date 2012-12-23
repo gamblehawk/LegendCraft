@@ -230,27 +230,27 @@ THE SOFTWARE.*/
         
         static readonly CommandDescriptor CdAbortAll = new CommandDescriptor 
     	{
-			Name = "AbortAll",
-			Aliases = new[] { "abort", "aba" },
-			Category = CommandCategory.Building,
-			Help = "Sets all toggles to false (paint, static, etc)",
-			Handler = AbortAllHandler
-		};
+		Name = "AbortAll",
+		Aliases = new[] { "abort", "aba" },
+		Category = CommandCategory.Building,
+		Help = "Sets all toggles to false (paint, static, etc)",
+		Handler = AbortAllHandler
+	};
 
-		static void AbortAllHandler( Player player, Command cmd ) 
-		{
-			player.IsPainting = false;				// /paint
-			player.ResetAllBinds();					// /bind
-			player.ParseMessage( "/brush normal", false ); // /brush (totally not a sneaky way to do this)
-			player.BuildingPortal = false;			// /portal
-			player.fireworkMode = false;			// /fireworks
-			player.GunMode = false;					// /gun
-			player.IsRepeatingSelection = false;	// /static
-			player.SelectionCancel();				// /cancel
-			player.StopSpectating();				// /spectate
-			player.towerMode = false;				// /tower
-			player.ParseMessage( "/nvm", false );	// /nvm
-		}
+	static void AbortAllHandler( Player player, Command cmd ) 
+	{
+		player.IsPainting = false;			// /paint
+		player.ResetAllBinds();				// /bind
+		player.ParseMessage( "/brush normal", false );  // /brush (totally not a sneaky way to do this)
+		player.BuildingPortal = false;			// /portal
+		player.fireworkMode = false;			// /fireworks
+		player.GunMode = false;				// /gun
+		player.IsRepeatingSelection = false;		// /static
+		player.SelectionCancel();			// /cancel
+		player.StopSpectating();			// /spectate
+		player.towerMode = false;			// /tower
+		player.ParseMessage( "/nvm", false );		// /nvm
+	}
         
         #endregion
 
