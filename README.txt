@@ -109,6 +109,8 @@ Other players cannot connect from the same LAN/network as me:
        ServerCLI.exe - Command-line interface for the server.
        ServerGUI.exe - Graphical interface for the server.
 
+  HeartBeatSaver.exe - Heartbeat sender tool.
+
 
 
 === Command-line Options ======================================================
