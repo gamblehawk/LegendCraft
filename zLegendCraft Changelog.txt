@@ -12,6 +12,7 @@ Change: sinfo now displayes software version
 Change: LeBot now has irc visiblity
 Change: /pay branched from /econ
 Change: Updated README
+Change: Users can only exit servergui with /shutdown (prevent accidents)
 
 LegendCraft Changelog v1.8.1 (emergency update)
 Change: fix to /nick
