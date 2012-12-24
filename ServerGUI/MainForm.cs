@@ -661,6 +661,21 @@ namespace fCraft.ServerGUI
         
         #endregion
         
+         #region PreventClose
+        //should prevent users from accidently closing the ServerGUI X out window
+
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                const int CS_NOCLOSE = 0x200;
+
+                CreateParams cp = base.CreateParams;
+                cp.ClassStyle |= CS_NOCLOSE;
+                return cp;
+            }
+        }
+        #endregion
 
 
         
