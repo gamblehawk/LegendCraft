@@ -75,6 +75,7 @@ namespace fCraft {
             CommandManager.RegisterCommand( CdEconomy );
             CommandManager.RegisterCommand( CdPay );
             CommandManager.RegisterCommand(CdBanGrief);
+            CommandManager.RegisterCommand( CdStealthKick );
 
         }
         #region LegendCraft
@@ -97,6 +98,56 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.*/
 
+
+        static readonly CommandDescriptor CdStealthKick = new CommandDescriptor
+        {
+            Name = "StealthKick",
+            Aliases = new[] { "sk", "stealthk" },
+            Category = CommandCategory.Moderation,
+            IsConsoleSafe = true,
+            Permissions = new[] { Permission.Gtfo },
+            Usage = "/StealthKick (playername)",
+            Help = "&SKicks a player stealthily. The kick will say the player disconnected and will not save to the playerDB.",
+            Handler = StealthKickHandler
+        };
+
+        internal static void StealthKickHandler(Player player, Command cmd)
+        {
+            string name = cmd.Next();
+            if (name == null)
+            {
+                player.Message("Please enter a name");
+                return;
+            }
+
+            Player target = Server.FindPlayerOrPrintMatches(player, name, false, true);
+            if (target == null) return;
+
+            if (target == player)
+            {
+                player.Message("You cannot StealthKick yourself.");
+                return;
+            }
+
+            if (cmd.HasNext)
+            {
+                player.Message("A reason does not need to be specified when using StealthKick.");
+            }
+
+            if (player.Can(Permission.Gtfo, target.Info.Rank))
+            {
+                Player targetPlayer = target;
+                target.StealthKick(player, LeaveReason.Unknown);
+            }
+            else
+            {
+                player.Message("You can only StealthKick players ranked {0}&S or lower",
+                                player.Info.Rank.GetLimit(Permission.Gtfo).ClassyName);
+                player.Message("{0}&S is ranked {1}", target.ClassyName, target.Info.Rank.ClassyName);
+            }
+        }
+        
+        
         static CommandDescriptor CdBanGrief = new CommandDescriptor
         {
             Name = "BanGrief",
