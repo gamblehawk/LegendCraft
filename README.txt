@@ -1,4 +1,5 @@
-For Downloads, visit: http://risingembers.enjin.com/forum/m/9404373/viewforum/1970847
+For The Latest Release, visit: [LegendCraft 1.8.1](http://risingembers.enjin.com/forum/m/9404373/viewthread/4926788-legendcraft-release-181)
+
 
 Thank you for downloading LegendCraft, a custom Minecraft server based on fCraft and 800craft.
 
@@ -104,7 +105,7 @@ Other players cannot connect from the same LAN/network as me:
        ConfigCLI.exe - A simple command-line configuration tool.
 
           fCraft.dll - Core of the server, used by all other applications.
-          fCraftGUI.dll - Provides shared functionality for Config and Server GUI.
+       fCraftGUI.dll - Provides shared functionality for Config and Server GUI.
 
        ServerCLI.exe - Command-line interface for the server.
        ServerGUI.exe - Graphical interface for the server.
