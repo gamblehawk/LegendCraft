@@ -192,7 +192,7 @@ THE SOFTWARE.
 
 The 800Craft HeartBeatSaver is Copyright (C) <2011, 2012> Jon Baker 
 and is ONLY to be distributed with copies of 800Craft.
-The LegendCraft HeartBeatSaver is sorta not really yet kinda the same as 800Craft's.
+The LegendCraft HeartBeatSaver unrelated to 800Craft's.
 
 800Craft's license:
 
