@@ -1,4 +1,4 @@
-﻿/* Copyright 2009-2012 Matvei Stefarov <me@matvei.org>
+/* Copyright 2009-2012 Matvei Stefarov <me@matvei.org>
  * 
  * Based, in part, on SmartIrc4net code. Original license is reproduced below.
  * 
@@ -44,6 +44,8 @@ namespace fCraft
     public static class IRC
     {
 
+        
+        
         /// <summary> Class represents an IRC connection/thread.
         /// There is an undocumented option (IRCThreads) to "load balance" the outgoing
         /// messages between multiple bots. If that's the case, several IRCThread objects
@@ -89,6 +91,7 @@ namespace fCraft
                 }
             }
 
+            
 
             void Connect()
             {
@@ -258,18 +261,24 @@ namespace fCraft
                                 {
                                     if (msg.Type == IRCMessageType.ChannelAction)
                                     {
-                                        Server.Message("&i(IRC) * {0} {1}",
+                                        Server.Message("(IRC) * {0} {1}",
+                                                        msg.Nick, processedMessage);
+                                        Logger.Log(LogType.IRC, "(IRC) * {0} {1}",
                                                         msg.Nick, processedMessage);
                                     }
                                     else
                                     {
-                                        Server.Message("&i(IRC) {0}{1}: {2}",
+                                        Server.Message("(IRC) {0}{1}: {2}",
+                                                        msg.Nick, Color.White, processedMessage);
+                                        Logger.Log(LogType.IRC, "(IRC) {0}{1}: {2}",
                                                         msg.Nick, Color.White, processedMessage);
                                     }
                                 }
                                 else if (msg.Message.StartsWith("#"))
                                 {
-                                    Server.Message("&i(IRC) {0}{1}: {2}",
+                                    Server.Message("(IRC) {0}{1}: {2}",
+                                                    msg.Nick, Color.White, processedMessage.Substring(1));
+                                    Logger.Log(LogType.IRC, "(IRC) {0}{1}: {2}",
                                                     msg.Nick, Color.White, processedMessage.Substring(1));
                                 }
                             }
