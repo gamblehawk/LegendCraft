@@ -22,7 +22,6 @@ namespace fCraft {
             CommandManager.RegisterCommand( CdPaint );
             CommandManager.RegisterCommand( CdSolid );
             CommandManager.RegisterCommand( CdWater );
-            CommandManager.RegisterCommand( CdDoubleStair );
 
 
             CommandManager.RegisterCommand( CdCancel );
@@ -229,30 +228,6 @@ THE SOFTWARE.*/
         }
         
         
-        static readonly CommandDescriptor CdDoubleStair = new CommandDescriptor     //a copy and paste of /lava
-        {
-            Name = "DoubleStair",
-            Aliases = new[] { "ds" },
-            Category = CommandCategory.Building,
-            Permissions = new[] { Permission.PlaceGrass },
-            Help = "Toggles the DoubleStair placement mode. When enabled, any Stair block you place is replaced with DoubleStair.",
-            Handler = DoubleStairHandler
-        };
-
-        static void DoubleStairHandler(Player player, Command cmd)
-        {
-            if (player.GetBind(Block.Stair) == Block.DoubleStair)
-            {
-                player.ResetBind(Block.Stair);
-                player.Message("DoubleStair: OFF");
-            }
-            
-            else
-            {
-                player.Bind(Block.Stair, Block.DoubleStair);
-                player.Message("DoubleStair: ON. Stair blocks are replaced with DoubleStairs.");
-            }
-        }
         
         
         static readonly CommandDescriptor CdAbortAll = new CommandDescriptor 
