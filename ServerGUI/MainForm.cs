@@ -39,7 +39,7 @@ namespace fCraft.ServerGUI
             Heartbeat.UriChanged += OnHeartbeatUriChanged;
             Server.PlayerListChanged += OnPlayerListChanged;
             Server.ShutdownEnded += OnServerShutdownEnded;
-            Text = "LegendCraft " + Updater.CurrentRelease.VersionString + " - starting...";
+            Text = "LegendCraft v.1.9.0 - starting...";
             startupThread = new Thread(StartupThread);
             startupThread.Name = "LegendCraft ServerGUI Startup";
             startupThread.Start();
@@ -437,11 +437,6 @@ namespace fCraft.ServerGUI
             System.Diagnostics.Process.Start(e.LinkText);
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-
-        }
-
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (SizeBox.SelectedItem.ToString() == "Normal")
@@ -660,8 +655,8 @@ namespace fCraft.ServerGUI
         
         
         #endregion
-        
-         #region PreventClose
+
+        #region PreventClose
         //should prevent users from accidently closing the ServerGUI X out window
 
         protected override CreateParams CreateParams
@@ -678,6 +673,7 @@ namespace fCraft.ServerGUI
         #endregion
 
 
-        
+
+
     }
 }
