@@ -1,8 +1,8 @@
-Want to run a server with LegendCraft? Latest Version: [LegendCraft 1.9.0](http://risingembers.enjin.com/forum/m/9404373/viewforum/1970847)
+Want to run a server with LegendCraft? Latest Version: [LegendCraft 1.9.0](http://risingembers.enjin.com/forum/m/9404373/viewthread/5333586-legendcraft-release-v190)
 
 #LegendCraft
 
-![LegendCraft Logo](http://i.imgur.com/lCm06.png)
+![LegendCraft Logo](http://i.imgur.com/bgZZQ.png)
 
 Open-Sourced Custom MineCraft-Classic Server Software
 
