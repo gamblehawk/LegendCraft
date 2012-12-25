@@ -1,4 +1,4 @@
-﻿// Copyright 2009-2012 Matvei Stefarov <me@matvei.org>
+// Copyright 2009-2012 Matvei Stefarov <me@matvei.org>
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -33,7 +33,7 @@ namespace fCraft.ConfigGUI {
             dgvcBlockDB.IndeterminateValue = YesNoAuto.Auto;
             bold = new Font( Font, FontStyle.Bold );
             Shown += Init;
-            Text = "LegendCraft Configuration (" + Updater.CurrentRelease.VersionString + ")";
+            Text = "LegendCraft Configuration ( v1.9.0 )";
         }
 
 
