@@ -1,4 +1,4 @@
-Want to run a server with LegendCraft? Latest Version: [LegendCraft 1.8.1](http://risingembers.enjin.com/forum/m/9404373/viewforum/1970847)
+Want to run a server with LegendCraft? Latest Version: [LegendCraft 1.9.0](http://risingembers.enjin.com/forum/m/9404373/viewforum/1970847)
 
 #LegendCraft
 
