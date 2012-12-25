@@ -1,4 +1,4 @@
-For The Latest Release, visit: http://risingembers.enjin.com/forum/m/9404373/viewthread/4926788-legendcraft-release-181
+For The Latest Release, visit: http://risingembers.enjin.com/forum/m/9404373/viewthread/5333586-legendcraft-release-v190
 
 
 Thank you for downloading LegendCraft, a custom Minecraft server based on fCraft and 800craft.
