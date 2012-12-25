@@ -39,7 +39,7 @@ namespace fCraft.ServerCLI {
             Logger.Logged += OnLogged;
             Heartbeat.UriChanged += OnHeartbeatUriChanged;
 
-            Console.Title = "LegendCraft " + Updater.CurrentRelease.VersionString + " - starting...";
+            Console.Title = "LegendCraft v.1.9.0 - starting...";
 
 #if !DEBUG
             try {
