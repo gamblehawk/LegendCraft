@@ -15,7 +15,7 @@ namespace fCraft.HeartbeatSaver
         const int ProtocolVersion = 7;
         static readonly Uri MinecraftNetUri = new Uri("https://minecraft.net/heartbeat.jsp");
 
-        static readonly TimeSpan Delay = TimeSpan.FromSeconds(5),
+        static readonly TimeSpan Delay = TimeSpan.FromSeconds(20),
                                  Timeout = TimeSpan.FromSeconds(10),
                                  ErrorDelay = TimeSpan.FromSeconds(5),
                                  RefreshDataDelay = TimeSpan.FromSeconds(60);
