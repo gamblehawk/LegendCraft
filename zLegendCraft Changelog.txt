@@ -1,3 +1,6 @@
+LegendCraft Changelof v2.0.0
+Change: Heartbeat sends beats every 15 seconds now
+
 LegendCraft Changelog v1.9.0
 Add: Themes to configGUI
 Add: PlayerViewer added
