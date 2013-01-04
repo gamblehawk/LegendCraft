@@ -819,7 +819,8 @@ THE SOFTWARE.*/
             }
 
             if (target == player){
-                player.Message("You suicidal bro?");
+                target.TeleportTo(player.World.Map.Spawn);
+                Server.Message("{0} killed itself in confusion!", player.ClassyName);
                 return;
             }
             double time = (DateTime.Now - player.Info.LastUsedKill).TotalSeconds;
