@@ -14,7 +14,7 @@ LegendCraft is designed to withstand a large server load,
 while maintaining an impressive performance with a large array of features and customization.
 
 ##LegendCraft-The History
- LegendCraft was founded in late summer of 2012 (aug 26th),
+ LegendCraft was founded in summer of 2012 (july 24th),
 where it started out as a nameless ‘800Craft custom edition’ software. 
 Eventually, LeChosenOne, the sole developer at the time gave it it’s name,
 ‘LegendCraft’. After the first release, it was quickly found out by a few servers,
