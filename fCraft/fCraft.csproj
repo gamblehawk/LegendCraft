@@ -119,6 +119,8 @@
     <Compile Include="Commands\Command Handlers\Math Handlers\PrepareParametrizedManifold.cs" />
     <Compile Include="Commands\Command Handlers\Math Handlers\Scaler.cs" />
     <Compile Include="Commands\Command Handlers\Math Handlers\SimpleParser.cs" />
+    <Compile Include="Commands\Command Handlers\Math Handlers\StartSpringDraw.cs" />
+    <Compile Include="Commands\Command Handlers\Math Handlers\PrepareSpring.cs" />
     <Compile Include="Commands\Command Handlers\RealmHandler.cs" />
     <Compile Include="Commands\Command Handlers\VoteHandler.cs" />
     <Compile Include="Commands\DevCommands.cs" />
