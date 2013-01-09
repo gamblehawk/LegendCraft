@@ -101,6 +101,8 @@
   <ItemGroup>
     <Content Include="ServerGUI.ico" />
   </ItemGroup>
+  <Compile Include= "ReturnCode.cs">
+  <Compile Include= "HeartBeatSaver.cs">
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
       <Visible>False</Visible>
