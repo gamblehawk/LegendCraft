@@ -388,7 +388,7 @@ namespace fCraft {
             // actually kick
             string kickReason;
 
-            kickReason = String.Format( "You disconnected from the server.");
+            kickReason = String.Format( "You've lost connection to the server."); //makes it seem like a realistic dc
 
             Kick(kickReason, reason);
 
