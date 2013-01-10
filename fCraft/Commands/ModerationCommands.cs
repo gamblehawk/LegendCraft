@@ -277,12 +277,13 @@ THE SOFTWARE.*/
                          player.Message("You do not have the required permisions to use that command!");
                          return;
                      }
-                     Player target = Server.FindPlayerOrPrintMatches(player, targetName, false, true);
                      if (targetName == null)
                      {
                          player.Message("&ePlease type in a player's name to give bits towards.");
                          return;
                      }
+                     Player target = Server.FindPlayerOrPrintMatches(player, targetName, false, true);
+                    
                      if (target == null)
                      {
                          return;
@@ -319,12 +320,13 @@ THE SOFTWARE.*/
                          player.Message("You do not have the required permisions to use that command!");
                          return;
                      }
-                     Player target = Server.FindPlayerOrPrintMatches(player, targetName, false, true);
                      if (targetName == null)
                      {
                          player.Message("&ePlease type in a player's name to take bits away from.");
                          return;
                      }
+                     Player target = Server.FindPlayerOrPrintMatches(player, targetName, false, true);
+                     
                      if (target == null)
                      {
                          return;
@@ -368,12 +370,13 @@ THE SOFTWARE.*/
                  if (option == "pay")
                  {
                      //lotsa idiot proofing in this one ^.^
-                     Player target = Server.FindPlayerOrPrintMatches(player, targetName, false, true);
+                     
                      if (targetName == null)
                      {
                          player.Message("&ePlease type in a player's name to pay bits towards.");
                          return;
                      }
+                     Player target = Server.FindPlayerOrPrintMatches(player, targetName, false, true);
                      if (target == player)
                      {
                          player.Message("You can't pay yourself >.> Doesn't work like that.");
@@ -425,12 +428,13 @@ THE SOFTWARE.*/
 
                  else if (option == "show")
                  {
-                     Player target = Server.FindPlayerOrPrintMatches(player, targetName, false, true);
+                     
                      if (targetName == null)
                      {
                          player.Message("&ePlease type in a player's name to see how many bits they have.");
                          return;
                      }
+                     Player target = Server.FindPlayerOrPrintMatches(player, targetName, false, true);
 
                      if (target == null)
                      {
