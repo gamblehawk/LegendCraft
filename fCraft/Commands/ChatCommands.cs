@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
+using System.Threading;
 
 namespace fCraft
 {
@@ -50,13 +52,12 @@ namespace fCraft
             CommandManager.RegisterCommand(CdCalculator);
             CommandManager.RegisterCommand(CdGPS);
             CommandManager.RegisterCommand(CdVote); 
-            //CommandManager.RegisterCommand(CdWorldChat);                                      
 
 
             Player.Moved += new EventHandler<Events.PlayerMovedEventArgs>(Player_IsBack);
         }
         #region LegendCraft
-        /* Copyright (c) <2012> <LeChosenOne, DingusBingus, Eeyle>
+        /* Copyright (c) <2012> <LeChosenOne, DingusBungus, Eeyle>
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -74,57 +75,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.*/
-
-
-        
-        static readonly CommandDescriptor CdWorldChat = new CommandDescriptor
-        {
-            Name = "WorldChat",
-            Category = CommandCategory.Chat | CommandCategory.World,
-            Permissions = new Permission[] { Permission.ManageWorldChat },
-            IsConsoleSafe = false,
-            Usage = "/WorldChat toggle/check",
-            Help = "Toggles World Chat.",
-            Handler = WorldChat,
-        };
-
-        static void WorldChat(Player player, Command cmd)
-        {
-            string option = cmd.Next();
-            if (option == "toggle")
-            {
-
-                if (player.World.WorldOnlyChat == false)
-                {
-                    Server.Message("{0}&c has activated world chat on {1}", player.ClassyName, player.World);
-                    player.World.WorldOnlyChat = true;
-                }
-                else
-                {
-                    Server.Message("{0}&c has deactivated world chat on {1}", player.ClassyName, player.World);
-                    player.World.WorldOnlyChat = false;
-                }
-            }
-            else if (option == "check")
-            {
-                if (player.World.WorldOnlyChat == true)
-                {
-                    player.Message("World Chat is enabled on {0}", player.World);
-                    return;
-                }
-                else
-                {
-                    player.Message("World Chat is disabled on {0}", player.World);
-                    return;
-                }
-            }
-            else
-            {
-                player.Message("Valid options are toggle and check.");
-                return;
-            }
-            
-        }                         
+      
 
          static readonly CommandDescriptor CdVote = new CommandDescriptor
         {
