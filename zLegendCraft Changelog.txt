@@ -1,4 +1,5 @@
 LegendCraft Changelof v2.0.0
+Add: /rejoin
 Change: Heartbeat sends beats every 15 seconds now
 Change: Bug fixes
 
@@ -7,12 +8,12 @@ Add: Themes to configGUI
 Add: PlayerViewer added
 Add: LegendCraft HeartBeat Saver
 Add: /Doublestair
-Add: /AbortAll (aborts pretty much everything)
+Add: /AbortAll 
 Add: /ZZ
-Add: /StealthKick (/Sk, /StealthlK), kicks user without anyone but the kicker knowing that it was a kick.
+Add: /StealthKick 
 Add: Developer Eeyle joined LC Team
-Add: $website ($ws) which displays the website name and more $(colors) for non-official color names (For example, $pink and $cyan)
-Add: /BanGrief, adds a ban cmd specifically for grief that gives an appeal with your server website. (Configured via a websiteurl.txt in server folder)
+Add: $website ($ws) and $(colors)
+Add: /BanGrief
 Change: sinfo now displayes software version
 Change: LeBot now has irc visiblity
 Change: /pay branched from /econ
