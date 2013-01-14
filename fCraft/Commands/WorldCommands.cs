@@ -1,4 +1,4 @@
-﻿// Copyright 2009-2012 Matvei Stefarov <me@matvei.org>
+// Copyright 2009-2012 Matvei Stefarov <me@matvei.org>
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -59,7 +59,95 @@ namespace fCraft {
             CommandManager.RegisterCommand(CdWorldSearch);
             SchedulerTask TimeCheckR = Scheduler.NewTask(TimeCheck).RunForever(TimeSpan.FromSeconds(120));
             CommandManager.RegisterCommand(CdPhysics);
+
+            CommandManager.RegisterCommand(CdRejoin);
+            //CommandManager.RegisterCommand(CdWorldChat);
         }
+
+        #region LegendCraft
+        /* Copyright (c) <2012> <LeChosenOne, DingusBungus, Eeyle>
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.*/
+           static readonly CommandDescriptor CdWorldChat = new CommandDescriptor
+           {
+            Name = "WorldChat",
+            Category = CommandCategory.World | CommandCategory.Chat,
+            Permissions = new Permission[] { Permission.ManageWorldChat },
+            IsConsoleSafe = false,
+            Usage = "/WorldChat [toggle:check]",
+            Help = "Toggles World Chat.",
+            Handler = WorldChat,
+        };
+
+        static void WorldChat(Player player, Command cmd)
+        {
+            string option = cmd.Next();
+            if (option == "toggle")
+            {
+
+                if (player.World.WorldOnlyChat == false)
+                {
+                    Server.Message("{0}&c has activated world chat on {1}", player.ClassyName, player.World);
+                    player.World.WorldOnlyChat = true;
+                }
+                else
+                {
+                    Server.Message("{0}&c has deactivated world chat on {1}", player.ClassyName, player.World);
+                    player.World.WorldOnlyChat = false;
+                }
+            }
+            else if (option == "check")
+            {
+                if (player.World.WorldOnlyChat == true)
+                {
+                    player.Message("World Chat is enabled on {0}", player.World);
+                    return;
+                }
+                else
+                {
+                    player.Message("World Chat is disabled on {0}", player.World);
+                    return;
+                }
+            }
+            else
+            {
+                player.Message("Valid options are toggle and check.");
+                return;
+            }
+            
+        }                         
+
+        static readonly CommandDescriptor CdRejoin = new CommandDescriptor
+        {
+            Name = "Rejoin",
+            Category = CommandCategory.World,
+            IsConsoleSafe = false,
+            Permissions = new[] { Permission.Chat },
+            Usage = "/rejoin",
+            Help = "Rejoins the current world you are in.",
+            Handler = RejoinHandler
+        };
+
+        static void RejoinHandler(Player player, Command cmd)
+        {
+            player.JoinWorld(player.World, WorldChangeReason.Rejoin);
+        }
+        #endregion
         #region 800Craft
 
         //Copyright (C) <2012>  <Jon Baker, Glenn Mariën and Lao Tszy>
