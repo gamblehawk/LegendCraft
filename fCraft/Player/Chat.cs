@@ -21,8 +21,7 @@ namespace fCraft {
             if( player == null ) throw new ArgumentNullException( "player" );
             if( rawMessage == null ) throw new ArgumentNullException( "rawMessage" );
             string OriginalMessage = rawMessage;
-            FileInfo websiteURLFile = new FileInfo("websiteurl.txt");
-                string[] reasonWebsite = File.ReadAllLines(websiteURLFile.FullName);
+            
             if (Server.Moderation && !Server.VoicedPlayers.Contains(player) && player.World != null)
             {
                 player.Message("&WError: Server Moderation is activated. Message failed to send");
@@ -42,8 +41,8 @@ namespace fCraft {
             rawMessage = rawMessage.Replace("$mad", "You mad, bro?");
             rawMessage = rawMessage.Replace("$welcome", "Welcome to " +ConfigKey.ServerName.GetString());
             rawMessage = rawMessage.Replace("$clap", "A round of applause might be appropriate, *claps*");
-            rawMessage = rawMessage.Replace("$website", reasonWebsite[0]);
-            rawMessage = rawMessage.Replace("$ws", reasonWebsite[0]);
+            rawMessage = rawMessage.Replace("$website", ConfigKey.WebsiteURL.GetString());
+            rawMessage = rawMessage.Replace("$ws", ConfigKey.WebsiteURL.GetString());
             
             if (player.Can(Permission.UseColorCodes))
             {
