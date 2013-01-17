@@ -274,7 +274,7 @@ THE SOFTWARE.*/
         #endregion
 
         #region LeBot
-        static readonly CommandDescriptor CdLeBot = new CommandDescriptor
+         static readonly CommandDescriptor CdLeBot = new CommandDescriptor
         {
             Name = "LeBot",
             Aliases = new[] { "lb" },
@@ -282,7 +282,7 @@ THE SOFTWARE.*/
             Permissions = new Permission[] { Permission.LeBot },
             IsConsoleSafe = false,
             Usage = "/LeBot Option",
-            Help = "LegendCraft Bot. Options are [help], [spleef], [go], [server], [joke], [time], [promos], [bans], [kicks], [players], [blocks], and [funfact].",
+            Help = "LegendCraft Bot. Options are [help], [spleef], [go], [server], [joke], [website], [time], [promos], [bans], [kicks], [players], [blocks], and [funfact].",
             NotRepeatable = true,
             Handler = LeBotHandler,
         };
@@ -307,7 +307,7 @@ THE SOFTWARE.*/
             }
             if (option == null)
             {
-                player.Message("LegendCraft Bot. Options are [help], [spleef], [go], [server], [joke], [time], [promos], [bans], [kicks], [players], [blocks], and [funfact].");
+                player.Message("LegendCraft Bot. Options are [help], [spleef], [go], [server], [joke], [time], [promos], [bans], [website], [kicks], [players], [blocks], and [funfact].");
                 return;
             }
             else if (option == "help")
@@ -334,13 +334,6 @@ THE SOFTWARE.*/
                 Scheduler.NewTask(t => Server.Message("&0LeBot&f: 2")).RunOnce(TimeSpan.FromSeconds(3));
                 Scheduler.NewTask(t => Server.Message("&0LeBot&f: 1")).RunOnce(TimeSpan.FromSeconds(4));
                 Scheduler.NewTask(t => Server.Message("&0LeBot&f: Go!")).RunOnce(TimeSpan.FromSeconds(5));
-                IRC.SendChannelMessage(player.ClassyName + "&0: LeBot, Go");
-                Scheduler.NewTask(t => IRC.SendChannelMessage("&0LeBot&0: 5")).RunOnce(TimeSpan.FromSeconds(0));
-                Scheduler.NewTask(t => IRC.SendChannelMessage("&0LeBot&0: 4")).RunOnce(TimeSpan.FromSeconds(1));
-                Scheduler.NewTask(t => IRC.SendChannelMessage("&0LeBot&0: 3")).RunOnce(TimeSpan.FromSeconds(2));
-                Scheduler.NewTask(t => IRC.SendChannelMessage("&0LeBot&0: 2")).RunOnce(TimeSpan.FromSeconds(3));
-                Scheduler.NewTask(t => IRC.SendChannelMessage("&0LeBot&0: 1")).RunOnce(TimeSpan.FromSeconds(4));
-                Scheduler.NewTask(t => IRC.SendChannelMessage("&0LeBot&0: Go!")).RunOnce(TimeSpan.FromSeconds(5));
                 player.Info.LastUsedLeBot = DateTime.Now;
             }
             else if (option == "spleef")
@@ -350,24 +343,18 @@ THE SOFTWARE.*/
                 Scheduler.NewTask(t => Server.Message("&0LeBot&f: 2")).RunOnce(TimeSpan.FromSeconds(1));
                 Scheduler.NewTask(t => Server.Message("&0LeBot&f: 1")).RunOnce(TimeSpan.FromSeconds(2));
                 Scheduler.NewTask(t => Server.Message("&0LeBot&f: Spleef!")).RunOnce(TimeSpan.FromSeconds(3));
-                IRC.SendChannelMessage(player.ClassyName + "&0: LeBot, Spleef");
-                Scheduler.NewTask(t => IRC.SendChannelMessage("&0LeBot&0: 3")).RunOnce(TimeSpan.FromSeconds(0));
-                Scheduler.NewTask(t => IRC.SendChannelMessage("&0LeBot&0: 2")).RunOnce(TimeSpan.FromSeconds(1));
-                Scheduler.NewTask(t => IRC.SendChannelMessage("&0LeBot&0: 1")).RunOnce(TimeSpan.FromSeconds(2));
-                Scheduler.NewTask(t => IRC.SendChannelMessage("&0LeBot&0: Spleef!")).RunOnce(TimeSpan.FromSeconds(3));
                 player.Info.LastUsedLeBot = DateTime.Now;
             }
 
             else if (option == "server")
             {
-                IRC.SendChannelMessage(player.ClassyName + "&0: LeBot, Server");
-                IRC.SendChannelMessage("&0LeBot&0: The name of this server is " + ConfigKey.ServerName.GetString() + ".");
                 Server.Message("{0}&f: LeBot, Server", player.ClassyName);
                 Server.Message("&0LeBot&f: The name of this server is " + ConfigKey.ServerName.GetString() + ".");
                 player.Info.LastUsedLeBot = DateTime.Now;
             }
             else if (option == "joke")
             {
+                Server.Message("{0}&f: LeBot, Joke", player.ClassyName);
                 string[] jokeStrings = { "&fEnergizer Bunny was arrested, charged with battery.",
                                       "&fI usually take steps to avoid elevators.",
                                       "&fSchrodinger's Cat: Wanted dead and alive.",
@@ -385,36 +372,37 @@ THE SOFTWARE.*/
                                       "&fNever hit a man with glasses. Hit him with a baseball bat instead.",
                                       "&fNostalgia isn't what it used to be."};
                 Random RandjokeString = new Random();
-                Server.Message("{0}&f: LeBot, Joke", player.ClassyName);
                 Server.Message("&0LeBot&f: " + jokeStrings[RandjokeString.Next(0, jokeStrings.Length)]);
-                IRC.SendChannelMessage(player.ClassyName + "&0: LeBot, Joke");
-                IRC.SendChannelMessage("&0LeBot&0: " + jokeStrings[RandjokeString.Next(0, jokeStrings.Length)]);
                 player.Info.LastUsedLeBot = DateTime.Now;
             }
             else if (option == "time")
             {
-                TimeSpan time = TimeSpan.FromHours(player.Info.TotalTime.TotalHours);
-                IRC.SendChannelMessage(player.ClassyName + "&0: LeBot, Time");
-                IRC.SendChannelMessage("&0LeBot&0: " + player.ClassyName + "&0 has spent a total of " + time.ToMiniString() + " &0on " + ConfigKey.ServerName.GetString() + "&0.");
                 Server.Message("{0}&f: LeBot, Time", player.ClassyName);
+                TimeSpan time = TimeSpan.FromHours(player.Info.TotalTime.TotalHours);
+
+
                 Server.Message("&0LeBot&f: {0}&f has spent a total of " + time.ToMiniString() + " &fon {1}&f.", player.ClassyName, ConfigKey.ServerName.GetString());
 
                 player.Info.LastUsedLeBot = DateTime.Now;
             }
+            else if (option == "website")
+            {
+                Server.Message("{0}&f: LeBot, Website", player.ClassyName);
+                Server.Message("&0LeBot&f: " + ConfigKey.ServerName.GetString() + "'s website is " + ConfigKey.WebsiteURL.GetString());
+                player.Info.LastUsedLeBot = DateTime.Now;
+            }
             else if (option == "promos")
             {
-                IRC.SendChannelMessage(player.ClassyName + "&0: LeBot, Promos");
-                IRC.SendChannelMessage("&0LeBot&0: " + player.ClassyName + " &0has promoted " + player.Info.PromoCount.ToString() + " &0players.");               
                 Server.Message("{0}&f: LeBot, Promos", player.ClassyName);
-                Server.Message("&0LeBot&f: {0} &fhas promoted " + player.Info.PromoCount.ToString() + " &fplayers.", player.ClassyName);
+
+                Server.Message("&0LeBot&f: {0} &fhas promoted " + player.Info.PromoCount.ToString() + " players.", player.ClassyName);
 
                 player.Info.LastUsedLeBot = DateTime.Now;
             }
             else if (option == "bans")
             {
-                IRC.SendChannelMessage(player.ClassyName + "&0: LeBot, Bans");
-                IRC.SendChannelMessage("&0LeBot&0: " + player.ClassyName + " &0has banned " + player.Info.TimesBannedOthers.ToString() + " &0players."); 
                 Server.Message("{0}&f: LeBot, Bans", player.ClassyName);
+
                 Server.Message("&0LeBot&f: {0}&f has banned " + player.Info.TimesBannedOthers.ToString() + " players.", player.ClassyName);
 
 
@@ -422,26 +410,24 @@ THE SOFTWARE.*/
             }
             else if (option == "kicks")
             {
-                IRC.SendChannelMessage(player.ClassyName + "&0: LeBot, Kicks");
-                IRC.SendChannelMessage("&0LeBot&0: " + player.ClassyName + " &0has kicked " + player.Info.TimesKickedOthers.ToString() + " &0players."); 
                 Server.Message("{0}&f: LeBot, Kicks", player.ClassyName);
-                Server.Message("&0LeBot&f: {0}&f has kicked " + player.Info.TimesKickedOthers.ToString() +  "&fplayers.", player.ClassyName);
+
+                Server.Message("&0LeBot&f: {0}&f has kicked " + player.Info.TimesKickedOthers.ToString() + " players.", player.ClassyName);
 
                 player.Info.LastUsedLeBot = DateTime.Now;
             }
             else if (option == "blocks")
             {
                 long Mods = player.Info.BlocksDrawn + player.Info.BlocksBuilt + player.Info.BlocksDeleted;
-                IRC.SendChannelMessage(player.ClassyName + "&0: LeBot, Blocks");
-                IRC.SendChannelMessage("&0LeBot&0: " + player.ClassyName + " &0has modified " + Mods + " &0blocks."); 
                 Server.Message("{0}&f: LeBot, Blocks", player.ClassyName);
-                Server.Message("&0LeBot&f: {0} &fhas modified " + Mods + " &fblocks.", player.ClassyName);
+                Server.Message("&0LeBot&f: {0} &fhas modified " + Mods + " blocks.", player.ClassyName);
                 player.Info.LastUsedLeBot = DateTime.Now;
             }
             else if (option == "funfact")
-            {                
+            {
+                Server.Message("{0}&f: LeBot, FunFact", player.ClassyName);
                 string[] factStrings = { "&fMaine is the only state in the USA that is one syllable.",
-                                      "&fThe adult human brain weighs about 3 pounds (1,300-1,400 g).",
+                                      "fThe adult human brain weighs about 3 pounds (1,300-1,400 g).",
                                       "&fPirates of old spoke just like everyone else. The 'pirate accent' was invented for the 1950 Disney movie, Treasure Island.",
                                       "&fAlmonds are a member of the peach family.",
                                       "&fParaguay's flag is the only national flag where the front and the back are different.",
@@ -459,13 +445,10 @@ THE SOFTWARE.*/
                                       "&fFortune cookies were actually invented in America, in 1918, by Charles Jung.",
                                       "&fTYPEWRITER is the longest word that can be made using the letters only on one row of the keyboard."};
                 Random RandfactString = new Random();
-                Server.Message("{0}&f: LeBot, FunFact", player.ClassyName);
                 Server.Message("&0LeBot&f: " + factStrings[RandfactString.Next(0, factStrings.Length)]);
-                IRC.SendChannelMessage(player.ClassyName + "&0: LeBot, FunFact");
-                IRC.SendChannelMessage("&0LeBot&0: " + factStrings[RandfactString.Next(0, factStrings.Length)]);
                 player.Info.LastUsedLeBot = DateTime.Now;
             }
-            
+
             else if (option == "players")
             {
                 string param = cmd.Next();
@@ -486,13 +469,13 @@ THE SOFTWARE.*/
                         Server.Message("{0}&f: LeBot, Players", player.ClassyName);
                         Server.Message("&0LeBot&f: There are no players {0}", qualifier);
                     }
-                    
+
                     else if (visiblePlayers.Length <= PlayersPerPage || player.IsSuper)
                     {
                         Server.Message("{0}&f: LeBot, Players", player.ClassyName);
                         Server.Message("&0LeBot&f: &SThere are {0} players {1}: {2}", visiblePlayers.Length, qualifier, visiblePlayers.JoinToClassyString());
                     }
-                    
+
                     else
                     {
                         if (offset >= visiblePlayers.Length)
@@ -666,7 +649,7 @@ THE SOFTWARE.*/
 
         static void CreditsHandler(Player player, Command cmd)
         {
-            player.Message(" LegendCraft was developed by LeChosenOne and DingusBungus. LegendCraft was based off of 800Craft developed by Jonty800, GlennMR, and Lao Tszy. 800Craft was based off of fCraft developed by fragmer. Thanks to everyone who contributed to these softwares. And thank you for using LegendCraft!");
+            player.Message(" LegendCraft was developed by LeChosenOne, DingusBungus and Eeyle. LegendCraft was based off of 800Craft developed by Jonty800, GlennMR, and Lao Tszy. 800Craft was based off of fCraft developed by fragmer. Thanks to everyone who contributed to these softwares. And thank you for using LegendCraft!");
         }
         static readonly CommandDescriptor CdBanHammer = new CommandDescriptor
         {
