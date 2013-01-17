@@ -1,4 +1,4 @@
-﻿// Copyright 2009-2012 Matvei Stefarov <me@matvei.org>
+// Copyright 2009-2012 Matvei Stefarov <me@matvei.org>
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -118,6 +118,7 @@ namespace fCraft.ConfigGUI {
             SwearBox.Text = ConfigKey.SwearName.GetString();
             CustomAliases.Text = ConfigKey.CustomAliasName.GetString();
             tMOTD.Text = ConfigKey.MOTD.GetString();
+            websiteURL.Text = ConfigKey.WebsiteURL.GetString();
 
             nMaxPlayers.Value = ConfigKey.MaxPlayers.GetInt();
             CheckMaxPlayersPerWorldValue();
@@ -446,6 +447,7 @@ namespace fCraft.ConfigGUI {
             ConfigKey.ServerName.TrySetValue( tServerName.Text );
             ConfigKey.CustomChatName.TrySetValue(CustomName.Text);
             ConfigKey.SwearName.TrySetValue(SwearBox.Text);
+            ConfigKey.WebsiteURL.TrySetValue(websiteURL.Text);
             ConfigKey.CustomAliasName.TrySetValue(CustomAliases.Text);
             ConfigKey.MOTD.TrySetValue( tMOTD.Text );
             ConfigKey.MaxPlayers.TrySetValue( nMaxPlayers.Value );
