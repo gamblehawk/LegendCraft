@@ -1370,7 +1370,7 @@ Your rank is {RANK}&S. Type &H/Help&S for help." );
             lines.Add( String.Format( "{0}{1}LeChosenOne&F: This is a normal chat message",
                                       xRankColorsInChat.Checked ? RankManager.HighestRank.Color : "",
                                       xRankPrefixesInChat.Checked ? RankManager.HighestRank.Prefix : "" ) );
-            lines.Add( "&Pfrom Dingus: This is a private message / whisper" );
+            lines.Add( "&Pfrom Eeyle: This is a private message / whisper" );
             lines.Add( "&M*LeChosenOne is using /Me to write this" );
             if( xShowJoinedWorldMessages.Checked ) {
                 Rank midRank = RankManager.LowestRank;
@@ -1378,7 +1378,7 @@ Your rank is {RANK}&S. Type &H/Help&S for help." );
                     midRank = RankManager.LowestRank.NextRankUp;
                 }
 
-                lines.Add( String.Format( "&SPlayer {0}{1}Dingus&S joined {2}{3}SomeOtherMap",
+                lines.Add( String.Format( "&SPlayer {0}{1}DingusBungus&S joined {2}{3}SomeOtherMap",
                                           xRankColorsInChat.Checked ? RankManager.HighestRank.Color : "",
                                           xRankPrefixesInChat.Checked ? RankManager.HighestRank.Prefix : "",
                                           xRankColorsInWorldNames.Checked ? midRank.Color : "",
@@ -1386,17 +1386,17 @@ Your rank is {RANK}&S. Type &H/Help&S for help." );
             }
             lines.Add( "&SUnknown command \"kikc\", see &H/Commands" );
             if( xAnnounceKickAndBanReasons.Checked ) {
-                lines.Add( String.Format( "&W{0}{1}LeChosenOne&W was kicked by {0}{1}gamer1&W: Reason goes here",
+                lines.Add( String.Format( "&W{0}{1}LeChosenOne&W was kicked by {0}{1}Eeyle&W: Reason goes here",
                                           xRankColorsInChat.Checked ? RankManager.HighestRank.Color : "",
                                           xRankPrefixesInChat.Checked ? RankManager.HighestRank.Prefix : "" ) );
             } else {
-                lines.Add( String.Format( "&W{0}{1}LeChosenOne&W was kicked by {0}{1}gamer1",
+                lines.Add( String.Format( "&W{0}{1}DingusBungus&W was kicked by {0}{1}Eeyle",
                                           xRankColorsInChat.Checked ? RankManager.HighestRank.Color : "",
                                           xRankPrefixesInChat.Checked ? RankManager.HighestRank.Prefix : "" ) );
             }
 
             if( xShowConnectionMessages.Checked ) {
-                lines.Add( String.Format( "&S{0}{1}Dingus&S left the server.",
+                lines.Add( String.Format( "&S{0}{1}DingusBungus&S left the server.",
                                           xRankColorsInChat.Checked ? RankManager.HighestRank.Color : "",
                                           xRankPrefixesInChat.Checked ? RankManager.HighestRank.Prefix : "" ) );
             }
@@ -1667,5 +1667,11 @@ Your rank is {RANK}&S. Type &H/Help&S for help." );
         {
 
         }
+
+        private void websiteURL_TextChanged(object sender, EventArgs e)
+        {
+            websiteURL.Text = websiteURL.Text.Trim();
+        }
+
     }
 }
