@@ -166,32 +166,12 @@ THE SOFTWARE.*/
             string targetName = cmd.Next();
             if (targetName == null)
             {
-                player.Message("&SUsage: /BanGrief Playername");
+                CdBanGrief.PrintUsage(player);
                 return;
             }
-            if (cmd.HasNext)
-            {
-                player.Message("&CYou don't need to specify a reason; that's the whole point of this command.");
-                return;
-            }
-
-            // Find the target
             PlayerInfo target = PlayerDB.FindPlayerInfoOrPrintMatches(player, targetName);
             if (target == null) return;
-
-            // Getting the reason, using websiteurl.txt as the website to appeal at.
-            // It's not the most elegant solution, but it works.
-            string reason = "Grief. Appeal at our website";
-            try
-            {
-                FileInfo websiteURLFile = new FileInfo("websiteurl.txt");
-                string[] reasonWebsite = File.ReadAllLines(websiteURLFile.FullName);
-                reason = "Grief. Appeal at " + reasonWebsite[0];
-            }
-            catch (Exception ex)
-            { Logger.LogToConsole("Could not read from websiteurl.txt. Using default BanGrief message"); }
-
-            // Actually ban the target
+            string reason = "Grief, appeal at " + ConfigKey.WebsiteURL.GetString();
             try
             {
                 Player targetPlayer = target.PlayerObject;
@@ -199,7 +179,13 @@ THE SOFTWARE.*/
                 WarnIfOtherPlayersOnIP(player, target, targetPlayer);
             }
             catch (PlayerOpException ex)
-            { player.Message(ex.MessageColored); }
+            {
+                player.Message(ex.MessageColored);
+                if (ex.ErrorCode == PlayerOpExceptionCode.ReasonRequired)
+                {
+                    FreezeIfAllowed(player, target);
+                }
+            }
         }
 
         #region Economy
