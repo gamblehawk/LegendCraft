@@ -25,9 +25,9 @@ namespace fCraft.ConfigGUI {
         /// </summary>
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tabs = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
@@ -85,7 +85,6 @@ namespace fCraft.ConfigGUI {
             this.xRankPrefixesInList = new System.Windows.Forms.CheckBox();
             this.xRankPrefixesInChat = new System.Windows.Forms.CheckBox();
             this.xRankColorsInChat = new System.Windows.Forms.CheckBox();
-            this.chatPreview = new fCraft.ConfigGUI.ChatPreview();
             this.tabWorlds = new System.Windows.Forms.TabPage();
             this.xWoMEnableEnvExtensions = new System.Windows.Forms.CheckBox();
             this.bMapPath = new System.Windows.Forms.Button();
@@ -275,6 +274,8 @@ namespace fCraft.ConfigGUI {
             this.lCrashReportDisclaimer = new System.Windows.Forms.Label();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.websiteURL = new System.Windows.Forms.TextBox();
             this.ReqsEditor = new System.Windows.Forms.Button();
             this.SwearEditor = new System.Windows.Forms.Button();
             this.MaxCapsValue = new System.Windows.Forms.NumericUpDown();
@@ -295,6 +296,8 @@ namespace fCraft.ConfigGUI {
             this.bResetAll = new System.Windows.Forms.Button();
             this.bApply = new System.Windows.Forms.Button();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.chatPreview = new fCraft.ConfigGUI.ChatPreview();
             this.tabs.SuspendLayout();
             this.tabGeneral.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -1063,13 +1066,6 @@ namespace fCraft.ConfigGUI {
             this.xRankColorsInChat.Text = "Show rank colors.";
             this.xRankColorsInChat.UseVisualStyleBackColor = true;
             // 
-            // chatPreview
-            // 
-            this.chatPreview.Location = new System.Drawing.Point(7, 256);
-            this.chatPreview.Name = "chatPreview";
-            this.chatPreview.Size = new System.Drawing.Size(637, 241);
-            this.chatPreview.TabIndex = 2;
-            // 
             // tabWorlds
             // 
             this.tabWorlds.BackColor = System.Drawing.Color.Firebrick;
@@ -1232,8 +1228,8 @@ namespace fCraft.ConfigGUI {
             this.dgvWorlds.MultiSelect = false;
             this.dgvWorlds.Name = "dgvWorlds";
             this.dgvWorlds.RowHeadersVisible = false;
-            dataGridViewCellStyle4.Padding = new System.Windows.Forms.Padding(0, 1, 0, 1);
-            this.dgvWorlds.RowsDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle2.Padding = new System.Windows.Forms.Padding(0, 1, 0, 1);
+            this.dgvWorlds.RowsDefaultCellStyle = dataGridViewCellStyle2;
             this.dgvWorlds.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvWorlds.Size = new System.Drawing.Size(636, 325);
             this.dgvWorlds.TabIndex = 0;
@@ -1291,8 +1287,8 @@ namespace fCraft.ConfigGUI {
             // dgvcBlockDB
             // 
             this.dgvcBlockDB.DataPropertyName = "BlockDBEnabled";
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dgvcBlockDB.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dgvcBlockDB.DefaultCellStyle = dataGridViewCellStyle1;
             this.dgvcBlockDB.HeaderText = "BlockDB";
             this.dgvcBlockDB.Name = "dgvcBlockDB";
             this.dgvcBlockDB.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
@@ -3281,6 +3277,8 @@ namespace fCraft.ConfigGUI {
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.label5);
+            this.groupBox3.Controls.Add(this.websiteURL);
             this.groupBox3.Controls.Add(this.ReqsEditor);
             this.groupBox3.Controls.Add(this.SwearEditor);
             this.groupBox3.Controls.Add(this.MaxCapsValue);
@@ -3293,6 +3291,23 @@ namespace fCraft.ConfigGUI {
             this.groupBox3.TabIndex = 27;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Other Configurations";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(28, 69);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(76, 15);
+            this.label5.TabIndex = 28;
+            this.label5.Text = "WebsiteURL";
+            // 
+            // websiteURL
+            // 
+            this.websiteURL.Location = new System.Drawing.Point(110, 67);
+            this.websiteURL.Name = "websiteURL";
+            this.websiteURL.Size = new System.Drawing.Size(212, 21);
+            this.websiteURL.TabIndex = 28;
+            this.websiteURL.TextChanged += new System.EventHandler(this.websiteURL_TextChanged);
             // 
             // ReqsEditor
             // 
@@ -3524,6 +3539,13 @@ namespace fCraft.ConfigGUI {
             this.toolTip.InitialDelay = 500;
             this.toolTip.IsBalloon = true;
             this.toolTip.ReshowDelay = 100;
+            // 
+            // chatPreview
+            // 
+            this.chatPreview.Location = new System.Drawing.Point(7, 256);
+            this.chatPreview.Name = "chatPreview";
+            this.chatPreview.Size = new System.Drawing.Size(637, 241);
+            this.chatPreview.TabIndex = 2;
             // 
             // MainForm
             // 
@@ -3903,5 +3925,8 @@ namespace fCraft.ConfigGUI {
         private System.Windows.Forms.Button SwearEditor;
         private System.Windows.Forms.Button ReqsEditor;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.TextBox websiteURL;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
