@@ -21,6 +21,11 @@ official server list (if server is public).",
 @"The name of the custom chat alias",
             MinLength = 1, MaxLength = 12)]
         CustomAliasName,
+        
+        [StringKey(ConfigSection.General, "WebsiteURL",
+@"The website used for the server. Used for $website and /BanGrief",
+MinLength = 1, MaxLength = 64)]
+        WebsiteURL,
 
         [StringKey(ConfigSection.General, "%CBlock",
 @"The word which swears will be replaced with",
