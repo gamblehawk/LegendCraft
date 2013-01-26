@@ -280,10 +280,11 @@ Thanks to Minecraft servers that helped test and improve fCraft:
     TheOne's Zombie Survival, SpecialAttack.net Freebuild, Team9000 Freebuild,
     D3M0Ns FreeBuild, ~The Best Freebuild 24/7~, 800Craft Freebuild Official
 
-Thanks to the bug Testers and helpers for LegendCraft:
-    Ascending Blackout Server Community, Pure2k12, ThunderCraft Server Community, and Rising Ember Community
+Thanks to those who helped test and improve LegendCraft:
+    Ascending Blackout Server Community, Pure2k12, ThunderCraft Server Community, 
+    Rising Ember Community
 
-Special Thanks to Pure2K12 for catching numerous bugs and for inspiration!
-Special Thanks to Jonty800 for doing stuff!
+Special Thanks to Pure2K12 for getting me started in this mess :D !
+Special Thanks to Jonty800 for being exceptionally awesome!
 
 And thank You for using LegendCraft!
