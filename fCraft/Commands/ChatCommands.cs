@@ -317,12 +317,13 @@ THE SOFTWARE.*/
                     "Server: Displays the server name.\n" +
                     "Joke: Displays a joke.\n" +
                     "Time: Displays the users total time on the server.\n" +
-                    "Promos: Displays the amount of players the user has promote.d\n" +
+                    "Promos: Displays the amount of players the user has promoted.\n" +
                     "Bans: Displays the amount of players the user has banned.\n" +
                     "Kicks: Displays the amount of players the user has kicked.\n" +
                     "Players: Displays the current players online.\n" +
                     "Blocks: Displays the amount of blocks the user has modified.\n" +
-                    "Funfact: Displays a funfact.\n");
+                    "Funfact: Displays a funfact.\n"
+                    "Website: Displays the server website.");
             }
 
             else if (option == "go")
@@ -511,7 +512,7 @@ THE SOFTWARE.*/
             }
             else
             {
-                player.Message("LegendCraft Bot. Options are [help], [spleef], [go], [server], [joke], [time], [promos], [bans], [kicks], [players], [blocks], and [funfact].");
+                player.Message("LegendCraft Bot. Options are [help], [spleef], [go], [server], [joke], [time], [promos], [bans], [website], [kicks], [players], [blocks], and [funfact].");
                 return;
             }
 
