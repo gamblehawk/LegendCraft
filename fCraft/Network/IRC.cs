@@ -261,14 +261,14 @@ namespace fCraft
                                 {
                                     if (msg.Type == IRCMessageType.ChannelAction)
                                     {
-                                        Server.Message("(IRC) * {0} {1}",
+                                        Server.Message("&i(IRC) * {0} {1}",
                                                         msg.Nick, processedMessage);
-                                        Logger.Log(LogType.IRC, "(IRC) * {0} {1}",
+                                        Logger.Log(LogType.IRC, "&i(IRC) * {0} {1}",
                                                         msg.Nick, processedMessage);
                                     }
                                     else
                                     {
-                                        Server.Message("(IRC) {0}{1}: {2}",
+                                        Server.Message("&i(IRC) {0}{1}: {2}",
                                                         msg.Nick, Color.White, processedMessage);
                                         Logger.Log(LogType.IRC, "(IRC) {0}{1}: {2}",
                                                         msg.Nick, Color.White, processedMessage);
@@ -276,9 +276,9 @@ namespace fCraft
                                 }
                                 else if (msg.Message.StartsWith("#"))
                                 {
-                                    Server.Message("(IRC) {0}{1}: {2}",
+                                    Server.Message("&i(IRC) {0}{1}: {2}",
                                                     msg.Nick, Color.White, processedMessage.Substring(1));
-                                    Logger.Log(LogType.IRC, "(IRC) {0}{1}: {2}",
+                                    Logger.Log(LogType.IRC, "&i(IRC) {0}{1}: {2}",
                                                     msg.Nick, Color.White, processedMessage.Substring(1));
                                 }
                             }
