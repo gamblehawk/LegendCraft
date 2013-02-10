@@ -412,8 +412,9 @@ namespace fCraft.ServerGUI
                 }
 #endif
             }
-            console.Text = " ";
+            console.Text = "";
         }
+
 
 
         private void bPlay_Click(object sender, EventArgs e)
@@ -468,14 +469,8 @@ namespace fCraft.ServerGUI
             }
         }
 
-        private bool isDef = true;
-        private bool isAlt = false;
-        private bool isPink = false;
-        private bool isYellow = false;
-        private bool isGreen = false;
-        private bool isPurple = false;
-        private bool isGrey = false;
 
+        private bool _isBlackText = false;
         private void ThemeBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ThemeBox.SelectedItem.ToString().Equals("Default LC")) { SetDefTheme(); }
@@ -493,19 +488,13 @@ namespace fCraft.ServerGUI
             BackColor = System.Drawing.Color.Firebrick;
             playerList.BackColor = System.Drawing.Color.White;
             logBox.BackColor = System.Drawing.Color.Black;
-            if (!isDef)
+            if (!_isBlackText)
             {
                 logBox.SelectAll();
                 logBox.SelectionColor = System.Drawing.Color.LightGray;
                 logBox.SelectionStart = logBox.Text.Length;
                 logBox.ScrollToCaret();
-                isDef = true;
-                isAlt = false;
-                isPink = false;
-                isYellow = false;
-                isGreen = false;
-                isPurple = false;
-                isGrey = false;
+                _isBlackText = true;
 
             }
         }
@@ -514,19 +503,13 @@ namespace fCraft.ServerGUI
             BackColor = System.Drawing.Color.Black;
             playerList.BackColor = System.Drawing.Color.White;
             logBox.BackColor = System.Drawing.Color.Firebrick;
-            if (!isAlt)
+            if (!_isBlackText)
             {
                 logBox.SelectAll();
                 logBox.SelectionColor = System.Drawing.Color.Black;
                 logBox.SelectionStart = logBox.Text.Length;
                 logBox.ScrollToCaret();
-                isDef = false;
-                isAlt = true;
-                isPink = false;
-                isYellow = false;
-                isGreen = false;
-                isPurple = false;
-                isGrey = false;
+                _isBlackText = true;
             }
         }
         public void SetPinkTheme()
@@ -534,19 +517,13 @@ namespace fCraft.ServerGUI
             BackColor = System.Drawing.Color.Pink;
             playerList.BackColor = System.Drawing.Color.LightPink;
             logBox.BackColor = System.Drawing.Color.LightPink;
-            if (!isPink)
+            if (!_isBlackText)
             {
                 logBox.SelectAll();
                 logBox.SelectionColor = System.Drawing.Color.Black;
                 logBox.SelectionStart = logBox.Text.Length;
                 logBox.ScrollToCaret();
-                isDef = false;
-                isAlt = false;
-                isPink = true;
-                isYellow = false;
-                isGreen = false;
-                isPurple = false;
-                isGrey = false;
+                _isBlackText = true;
             }
         }
 
@@ -555,19 +532,13 @@ namespace fCraft.ServerGUI
             BackColor = System.Drawing.Color.LightGoldenrodYellow;
             playerList.BackColor = System.Drawing.Color.LightYellow;
             logBox.BackColor = System.Drawing.Color.LightYellow;
-            if (!isYellow)
+            if (!_isBlackText)
             {
                 logBox.SelectAll();
                 logBox.SelectionColor = System.Drawing.Color.Black;
                 logBox.SelectionStart = logBox.Text.Length;
                 logBox.ScrollToCaret();
-                isDef = false;
-                isAlt = false;
-                isPink = false;
-                isYellow = true;
-                isGreen = false;
-                isPurple = false;
-                isGrey = false;
+                _isBlackText = true;
             }
         }
 
@@ -576,19 +547,13 @@ namespace fCraft.ServerGUI
             BackColor = System.Drawing.Color.SpringGreen;
             playerList.BackColor = System.Drawing.Color.LightGreen;
             logBox.BackColor = System.Drawing.Color.LightGreen;
-            if (!isGreen)
+            if (!_isBlackText)
             {
                 logBox.SelectAll();
                 logBox.SelectionColor = System.Drawing.Color.Black;
                 logBox.SelectionStart = logBox.Text.Length;
                 logBox.ScrollToCaret();
-                isDef = false;
-                isAlt = false;
-                isPink = false;
-                isYellow = false;
-                isGreen = true;
-                isPurple = false;
-                isGrey = false;
+                _isBlackText = true;
             }
         }
 
@@ -597,19 +562,13 @@ namespace fCraft.ServerGUI
             BackColor = System.Drawing.Color.MediumPurple;
             playerList.BackColor = System.Drawing.Color.Plum;
             logBox.BackColor = System.Drawing.Color.Plum;
-            if (!isPurple)
+            if (!_isBlackText)
             {
                 logBox.SelectAll();
                 logBox.SelectionColor = System.Drawing.Color.Black;
                 logBox.SelectionStart = logBox.Text.Length;
                 logBox.ScrollToCaret();
-                isDef = false;
-                isAlt = false;
-                isPink = false;
-                isYellow = false;
-                isGreen = false;
-                isPurple = true;
-                isGrey = false;
+                _isBlackText = true;
             }
         }
 
@@ -618,21 +577,16 @@ namespace fCraft.ServerGUI
             BackColor = System.Drawing.SystemColors.Control;
             playerList.BackColor = System.Drawing.SystemColors.ControlLight;
             logBox.BackColor = System.Drawing.SystemColors.ControlLight;
-            if (!isGrey)
+            if (!_isBlackText)
             {
                 logBox.SelectAll();
                 logBox.SelectionColor = System.Drawing.Color.Black;
                 logBox.SelectionStart = logBox.Text.Length;
                 logBox.ScrollToCaret();
-                isDef = false;
-                isAlt = false;
-                isPink = false;
-                isYellow = false;
-                isGreen = false;
-                isPurple = false;
-                isGrey = true;
+                _isBlackText = true;
             }
         }
+
         #region PlayerViewer
       
         private void playerList_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -659,21 +613,20 @@ namespace fCraft.ServerGUI
         #region PreventClose
         //should prevent users from accidently closing the ServerGUI X out window
 
-        protected override CreateParams CreateParams
+        private void ServerGUI_FormClosing(object sender, FormClosingEventArgs e)
         {
-            get
+            switch (MessageBox.Show("Are you sure you would like to exit?", "Warning", MessageBoxButtons.YesNoCancel))
             {
-                const int CS_NOCLOSE = 0x200;
+                case DialogResult.Yes:
 
-                CreateParams cp = base.CreateParams;
-                cp.ClassStyle |= CS_NOCLOSE;
-                return cp;
+                case DialogResult.Cancel:
+                    e.Cancel = true;
+                    return;
             }
         }
+
+
         #endregion
-
-
-
 
     }
 }
