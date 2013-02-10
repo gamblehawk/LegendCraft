@@ -1,4 +1,4 @@
-LegendCraft Changelof v2.0.0
+LegendCraft Changelog v2.0.0
 Add: /rejoin
 Change: Website can now be added in config
 Change: Heartbeat sends beats every 15 seconds now
