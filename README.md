@@ -91,9 +91,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-LegendCraft was developed by LeChosenOne and DingusBungus 
-   
- With Code Contribution by Eeyle. 
+LegendCraft was developed by LeChosenOne, DingusBungus, and Eeyle 
+
    
 LegendCraft is open-sourced in the hopes that others will benefit from both the software and the code.
 
