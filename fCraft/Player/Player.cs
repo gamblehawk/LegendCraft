@@ -354,47 +354,6 @@ namespace fCraft {
 
         #region Chat and Messaging
         
-        
-        #region StealthKick
-        /// <summary> A kick command that doesn't save to playerDB and only the player who did the command knows that it is a kick. </summary>
-        /// <param name="context"> Classification of kick context. </param>
-
-        public void StealthKick([NotNull] Player player, LeaveReason reason)
-        {
-            if (player == null) throw new ArgumentNullException("player");
-            if (!Enum.IsDefined(typeof(LeaveReason), reason))
-            {
-                throw new ArgumentOutOfRangeException("context");
-            }
-
-            // Check if player can ban/unban in general
-            if (!player.Can(Permission.Gtfo))
-            {
-                PlayerOpException.ThrowPermissionMissing(player, Info, "kick", Permission.Gtfo);
-            }
-
-            // Check if player is trying to ban/unban self
-            if (player == this)
-            {
-                PlayerOpException.ThrowCannotTargetSelf(player, Info, "kick");
-            }
-
-            // Check if player has sufficiently high permission limit
-            if (!player.Can(Permission.Kick, Info.Rank))
-            {
-                PlayerOpException.ThrowPermissionLimit(player, Info, "kick", Permission.Gtfo);
-            }
-
-            // actually kick
-            string kickReason;
-
-            kickReason = String.Format( "You've lost connection to the server."); //makes it seem like a realistic dc
-
-            Kick(kickReason, reason);
-
-        }
-
-        #endregion 
 
 
         static readonly TimeSpan ConfirmationTimeout = TimeSpan.FromSeconds( 60 );
