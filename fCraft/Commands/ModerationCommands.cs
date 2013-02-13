@@ -100,7 +100,7 @@ THE SOFTWARE.*/
 
        
 
-       static readonly CommandDescriptor CdStealthKick = new CommandDescriptor
+        static readonly CommandDescriptor CdStealthKick = new CommandDescriptor
         {
             Name = "StealthKick",
             Aliases = new[] { "sk", "stealthk" },
@@ -138,7 +138,7 @@ THE SOFTWARE.*/
             if (player.Can(Permission.Gtfo, target.Info.Rank))
             {
                 Player targetPlayer = target;
-                target.StealthKick(player, LeaveReason.Unknown);
+                target.Send(PacketWriter.MakeDisconnect("You've lost connection to the server."));
             }
             else
             {
