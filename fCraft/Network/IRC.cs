@@ -263,7 +263,7 @@ namespace fCraft
                                     {
                                         Server.Message("&i(IRC) * {0} {1}",
                                                         msg.Nick, processedMessage);
-                                        Logger.Log(LogType.IRC, "&i(IRC) * {0} {1}",
+                                        Logger.Log(LogType.IRC, "(IRC) * {0} {1}",
                                                         msg.Nick, processedMessage);
                                     }
                                     else
@@ -278,7 +278,7 @@ namespace fCraft
                                 {
                                     Server.Message("&i(IRC) {0}{1}: {2}",
                                                     msg.Nick, Color.White, processedMessage.Substring(1));
-                                    Logger.Log(LogType.IRC, "&i(IRC) {0}{1}: {2}",
+                                    Logger.Log(LogType.IRC, "(IRC) {0}{1}: {2}",
                                                     msg.Nick, Color.White, processedMessage.Substring(1));
                                 }
                             }
